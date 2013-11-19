@@ -1,6 +1,6 @@
 #import "EZSideMenu.h"
 /////////////////start
-BOOL EZSideMenuUIKitIsFlatMode()
+BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 {
     static BOOL             isUIKitFlatMode = NO;
     static dispatch_once_t  onceToken;
@@ -64,7 +64,7 @@ BOOL EZSideMenuUIKitIsFlatMode()
 @property (strong, readwrite, nonatomic) UIImageView    *backgroundImageView;
 @property (assign, readwrite, nonatomic) BOOL           visible;
 @property (assign, readwrite, nonatomic) CGPoint        originalPoint;
-@property (strong, readwrite, nonatomic) UIButton       *contentButton;
+@property (strong, readwrite, nonatomic) UIButton       *contentButton;//主界面上add上去的按钮
 
 @end
 
@@ -130,6 +130,7 @@ BOOL EZSideMenuUIKitIsFlatMode()
 {
     [super viewDidLoad];
 
+    //打开抽屉后主界面的中心点便宜
     if (!_contentViewInLandscapeOffsetCenterX) {
         _contentViewInLandscapeOffsetCenterX = CGRectGetHeight(self.view.frame) + 30.f;
     }
@@ -251,9 +252,9 @@ BOOL EZSideMenuUIKitIsFlatMode()
         [self.delegate sideMenu:self willHideMenuViewController:self.menuViewController];
     }
 
-    [self.contentButton removeFromSuperview];
+    [self.contentButton removeFromSuperview];//记得移除按钮
 
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];//忽略所有事件
     [UIView animateWithDuration:self.animationDuration animations:^{
         self.contentViewController.view.transform = CGAffineTransformIdentity;
         self.contentViewController.view.frame = self.view.bounds;
@@ -506,6 +507,7 @@ BOOL EZSideMenuUIKitIsFlatMode()
 
 - (void)updateStatusBar
 {
+    //ios7刷新状态栏
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
         [UIView animateWithDuration:0.3f animations:^{
             [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];

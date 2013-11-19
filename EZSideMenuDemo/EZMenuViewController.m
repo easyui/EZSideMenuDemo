@@ -118,7 +118,7 @@
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleDefault ;//UIStatusBarStyleLightContent;
+    return UIStatusBarStyleBlackTranslucent ;//UIStatusBarStyleLightContent;
 }
 
 @end

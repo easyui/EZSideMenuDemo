@@ -97,5 +97,8 @@
     NSLog(@"didHideMenuViewController");
 }
 
+- (void)sideMenu:(EZSideMenu *)sideMenu didRecognizePanGesture:(UIPanGestureRecognizer *)recognizer{
+ NSLog(@"didRecognizePanGesture");
+}
 
 @end

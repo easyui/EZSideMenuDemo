@@ -40,11 +40,11 @@ BOOL EZSideMenuUIKitIsFlatMode();
 
 @interface EZSideMenu : UIViewController
 
-@property (assign, readwrite, nonatomic) NSTimeInterval animationDuration;
+@property (assign, readwrite, nonatomic) NSTimeInterval animationDuration;//动画时间
 @property (strong, readwrite, nonatomic) UIImage        *backgroundImage;
-@property (assign, readwrite, nonatomic) BOOL           panGestureEnabled;
-@property (assign, readwrite, nonatomic) BOOL           scaleContentView;
-@property (assign, readwrite, nonatomic) BOOL           scaleBackgroundImageView;
+@property (assign, readwrite, nonatomic) BOOL           panGestureEnabled;//支持手势滑动
+@property (assign, readwrite, nonatomic) BOOL           scaleContentView;//主页面是否缩放
+@property (assign, readwrite, nonatomic) BOOL           scaleBackgroundImageView;//抽屉背景是否缩放
 @property (assign, readwrite, nonatomic) CGFloat        contentViewScaleValue;
 @property (assign, readwrite, nonatomic) CGFloat        contentViewInLandscapeOffsetCenterX;
 @property (assign, readwrite, nonatomic) CGFloat        contentViewInPortraitOffsetCenterX;
