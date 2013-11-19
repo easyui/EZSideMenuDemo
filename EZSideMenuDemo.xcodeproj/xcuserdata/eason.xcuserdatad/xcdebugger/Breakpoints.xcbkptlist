@@ -73,7 +73,7 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "EZSideMenu/EZSideMenu.m"
-         timestampString = "406575176.646742"
+         timestampString = "406579859.493779"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "549"
@@ -92,6 +92,32 @@
          startingLineNumber = "121"
          endingLineNumber = "121"
          landmarkName = "-preferredStatusBarStyle"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "EZSideMenu/EZSideMenu.m"
+         timestampString = "406579859.493779"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "446"
+         endingLineNumber = "446"
+         landmarkName = "-panGestureRecognized:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "EZSideMenu/EZSideMenu.m"
+         timestampString = "406579859.493779"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "440"
+         endingLineNumber = "440"
+         landmarkName = "-panGestureRecognized:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

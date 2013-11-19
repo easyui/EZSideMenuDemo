@@ -232,6 +232,8 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     [UIView animateWithDuration:self.animationDuration animations:^{
         if (self.scaleContentView) {
             self.contentViewController.view.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+        } else {
+            self.contentViewController.view.transform = CGAffineTransformIdentity;
         }
 
         self.contentViewController.view.center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX : self.contentViewInPortraitOffsetCenterX), self.contentViewController.view.center.y);
@@ -405,7 +407,8 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     if ((recognizer.state == UIGestureRecognizerStateBegan) || (recognizer.state == UIGestureRecognizerStateChanged)) {
         CGFloat delta = self.visible ? (point.x + self.originalPoint.x) / self.originalPoint.x : point.x / self.view.frame.size.width;
 
-        CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
+        //        CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
+        CGFloat contentViewScale = 1 - ((1 - self.contentViewScaleValue) * delta);
         CGFloat backgroundViewScale = self.backgroundImageViewScaleValue - (0.7f * delta);
         CGFloat menuViewScale = self.menuViewControllerScaleValue - (0.5f * delta);
 
@@ -431,10 +434,9 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
             if (!self.visible) {
                 self.contentViewController.view.transform = CGAffineTransformIdentity;
             }
-
             self.contentViewController.view.frame = self.view.bounds;
         } else {
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(contentViewScale, contentViewScale);
+            self.contentViewController.view.transform = self.scaleContentView?CGAffineTransformMakeScale(contentViewScale, contentViewScale):CGAffineTransformIdentity;
             self.contentViewController.view.transform = CGAffineTransformTranslate(self.contentViewController.view.transform, self.visible ? point.x * 0.8 : point.x, 0);
         }
 
@@ -442,7 +444,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     }
 
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        if ([recognizer velocityInView:self.view].x > 0) {
+        if ([recognizer velocityInView:self.view].x > 0) {//返回速度适量
             [self showMenuViewController];
         } else {
             [self hideMenuViewController];
