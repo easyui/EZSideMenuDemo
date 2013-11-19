@@ -1,6 +1,6 @@
 #import "EZSideMenu.h"
 /////////////////start
-BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
+BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 {
     static BOOL             isUIKitFlatMode = NO;
     static dispatch_once_t  onceToken;
@@ -64,7 +64,7 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 @property (strong, readwrite, nonatomic) UIImageView    *backgroundImageView;
 @property (assign, readwrite, nonatomic) BOOL           visible;
 @property (assign, readwrite, nonatomic) CGPoint        originalPoint;
-@property (strong, readwrite, nonatomic) UIButton       *contentButton;//主界面上add上去的按钮
+@property (strong, readwrite, nonatomic) UIButton       *contentButton; // 主界面上add上去的按钮
 
 @end
 
@@ -98,13 +98,17 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.wantsFullScreenLayout = YES;
 #pragma clang diagnostic pop
-    _animationDuration = 0.35f;
+    _animationDuration = 0.3f;
     _panGestureEnabled = YES;
 
     _scaleContentView = YES;
     _contentViewScaleValue = 0.7f;
 
     _scaleBackgroundImageView = YES;
+    _backgroundImageViewScaleValue = 1.7f;
+    _scaleMenuViewController = YES;
+    _menuViewControllerScaleValue = 1.5;
+    _gradientViewController = YES;
 
     _parallaxEnabled = YES;
     _parallaxMenuMinimumRelativeValue = @(-15);
@@ -130,7 +134,7 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 {
     [super viewDidLoad];
 
-    //打开抽屉后主界面的中心点便宜
+    // 打开抽屉后主界面的中心点便宜
     if (!_contentViewInLandscapeOffsetCenterX) {
         _contentViewInLandscapeOffsetCenterX = CGRectGetHeight(self.view.frame) + 30.f;
     }
@@ -156,10 +160,13 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
     [self.view addSubview:self.backgroundImageView];
     [self re_displayController:self.menuViewController frame:self.view.frame];
     [self re_displayController:self.contentViewController frame:self.view.frame];
-    self.menuViewController.view.alpha = 0;
+
+    if (self.gradientViewController) {
+        self.menuViewController.view.alpha = 0;
+    }
 
     if (self.scaleBackgroundImageView) {
-        self.backgroundImageView.transform = CGAffineTransformMakeScale(1.7f, 1.7f);
+        self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
     }
 
     [self addMenuViewControllerMotionEffects];
@@ -194,19 +201,20 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 
 - (void)presentMenuViewController
 {
-    self.menuViewController.view.transform = CGAffineTransformIdentity;
-
     if (self.scaleBackgroundImageView) {
         self.backgroundImageView.transform = CGAffineTransformIdentity;
         self.backgroundImageView.frame = self.view.bounds;
+        self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
     }
 
-    self.menuViewController.view.frame = self.view.bounds;
-    self.menuViewController.view.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-    self.menuViewController.view.alpha = 0;
+    if (self.scaleMenuViewController) {
+        self.menuViewController.view.transform = CGAffineTransformIdentity;
+        self.menuViewController.view.frame = self.view.bounds;
+        self.menuViewController.view.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
+    }
 
-    if (self.scaleBackgroundImageView) {
-        self.backgroundImageView.transform = CGAffineTransformMakeScale(1.7f, 1.7f);
+    if (self.gradientViewController) {
+        self.menuViewController.view.alpha = 0;
     }
 
     if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willShowMenuViewController:)]) {
@@ -227,11 +235,17 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
         }
 
         self.contentViewController.view.center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX : self.contentViewInPortraitOffsetCenterX), self.contentViewController.view.center.y);
-        self.menuViewController.view.alpha = 1.0f;
-        self.menuViewController.view.transform = CGAffineTransformIdentity;
 
         if (self.scaleBackgroundImageView) {
             self.backgroundImageView.transform = CGAffineTransformIdentity;
+        }
+
+        if (self.scaleMenuViewController) {
+            self.menuViewController.view.transform = CGAffineTransformIdentity;
+        }
+
+        if (self.gradientViewController) {
+            self.menuViewController.view.alpha = 1.f;
         }
     } completion:^(BOOL finished) {
         [self addContentViewControllerMotionEffects];
@@ -252,17 +266,23 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
         [self.delegate sideMenu:self willHideMenuViewController:self.menuViewController];
     }
 
-    [self.contentButton removeFromSuperview];//记得移除按钮
+    [self.contentButton removeFromSuperview];                           // 记得移除按钮
 
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];//忽略所有事件
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents]; // 忽略所有事件
     [UIView animateWithDuration:self.animationDuration animations:^{
         self.contentViewController.view.transform = CGAffineTransformIdentity;
         self.contentViewController.view.frame = self.view.bounds;
-        self.menuViewController.view.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        self.menuViewController.view.alpha = 0;
 
         if (self.scaleBackgroundImageView) {
-            self.backgroundImageView.transform = CGAffineTransformMakeScale(1.7f, 1.7f);
+            self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
+        }
+
+        if (self.scaleMenuViewController) {
+            self.menuViewController.view.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
+        }
+
+        if (self.gradientViewController) {
+            self.menuViewController.view.alpha = 0;
         }
 
         if (self.parallaxEnabled) {
@@ -356,7 +376,6 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 
     if (!self.panGestureEnabled) {
         return;
-        
     }
 
     CGPoint point = [recognizer translationInView:self.view];
@@ -374,7 +393,11 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
             self.backgroundImageView.frame = self.view.bounds;
         }
 
-        self.menuViewController.view.frame = self.view.bounds;
+        if (self.scaleContentView) {
+            self.backgroundImageView.transform = CGAffineTransformIdentity;
+            self.menuViewController.view.frame = self.view.bounds;
+        }
+
         [self addContentButton];
         [self.view.window endEditing:YES];
     }
@@ -383,16 +406,20 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
         CGFloat delta = self.visible ? (point.x + self.originalPoint.x) / self.originalPoint.x : point.x / self.view.frame.size.width;
 
         CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
-        CGFloat backgroundViewScale = 1.7f - (0.7f * delta);
-        CGFloat menuViewScale = 1.5f - (0.5f * delta);
+        CGFloat backgroundViewScale = self.backgroundImageViewScaleValue - (0.7f * delta);
+        CGFloat menuViewScale = self.menuViewControllerScaleValue - (0.5f * delta);
 
-        self.menuViewController.view.alpha = delta;
+        if (self.gradientViewController) {
+            self.menuViewController.view.alpha = delta;
+        }
 
         if (self.scaleBackgroundImageView) {
             self.backgroundImageView.transform = CGAffineTransformMakeScale(backgroundViewScale, backgroundViewScale);
         }
 
-        self.menuViewController.view.transform = CGAffineTransformMakeScale(menuViewScale, menuViewScale);
+        if (self.scaleMenuViewController) {
+            self.menuViewController.view.transform = CGAffineTransformMakeScale(menuViewScale, menuViewScale);
+        }
 
         if (self.scaleBackgroundImageView) {
             if (backgroundViewScale < 1) {
@@ -507,7 +534,7 @@ BOOL EZSideMenuUIKitIsFlatMode()//是否支持扁平
 
 - (void)updateStatusBar
 {
-    //ios7刷新状态栏
+    // ios7刷新状态栏
     if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
         [UIView animateWithDuration:0.3f animations:^{
             [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];

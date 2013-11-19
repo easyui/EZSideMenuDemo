@@ -1,8 +1,6 @@
-
-
 #import <UIKit/UIKit.h>
 @class EZSideMenu;
-///////////////start
+///////////////start ,兼容ios7
 #ifndef EZUIKitIsFlatMode
   #define EZUIKitIsFlatMode() EZSideMenuUIKitIsFlatMode()
 #endif
@@ -25,7 +23,7 @@ BOOL EZSideMenuUIKitIsFlatMode();
 
 ////////////////////end
 
-////////
+/////////category
 @interface UIViewController (EZSideMenu)
 
 @property (strong, readonly, nonatomic) EZSideMenu *sideMenuViewController;
@@ -40,24 +38,34 @@ BOOL EZSideMenuUIKitIsFlatMode();
 
 @interface EZSideMenu : UIViewController
 
-@property (assign, readwrite, nonatomic) NSTimeInterval animationDuration;//动画时间
-@property (strong, readwrite, nonatomic) UIImage        *backgroundImage;
-@property (assign, readwrite, nonatomic) BOOL           panGestureEnabled;//支持手势滑动
-@property (assign, readwrite, nonatomic) BOOL           scaleContentView;//主页面是否缩放
-@property (assign, readwrite, nonatomic) BOOL           scaleBackgroundImageView;//抽屉背景是否缩放
-@property (assign, readwrite, nonatomic) CGFloat        contentViewScaleValue;
-@property (assign, readwrite, nonatomic) CGFloat        contentViewInLandscapeOffsetCenterX;
-@property (assign, readwrite, nonatomic) CGFloat        contentViewInPortraitOffsetCenterX;
-@property (strong, readwrite, nonatomic) id             parallaxMenuMinimumRelativeValue;
-@property (strong, readwrite, nonatomic) id             parallaxMenuMaximumRelativeValue;
-@property (strong, readwrite, nonatomic) id             parallaxContentMinimumRelativeValue;
-@property (strong, readwrite, nonatomic) id             parallaxContentMaximumRelativeValue;
-@property (assign, readwrite, nonatomic) BOOL           parallaxEnabled;
+@property (assign, nonatomic) NSTimeInterval animationDuration;  // 动画时间
+@property (assign, nonatomic) BOOL           panGestureEnabled;  // 支持手势滑动
 
-@property (strong, readwrite, nonatomic) UIViewController   *contentViewController;
-@property (strong, readwrite, nonatomic) UIViewController   *menuViewController;
+@property (strong, nonatomic) UIViewController   *contentViewController;
+@property (assign, nonatomic) BOOL           scaleContentView;   // 主页面是否缩放
+@property (assign, nonatomic) CGFloat    contentViewScaleValue;
+@property (assign, nonatomic) CGFloat    contentViewInLandscapeOffsetCenterX;
+@property (assign, nonatomic) CGFloat    contentViewInPortraitOffsetCenterX;
 
-@property (weak, readwrite, nonatomic) id <EZSideMenuDelegate> delegate;
+@property (strong, nonatomic) UIViewController   *menuViewController;
+@property (assign, nonatomic) BOOL               scaleMenuViewController; // 抽屉是否缩放
+@property (assign, nonatomic) CGFloat            menuViewControllerScaleValue;
+@property (assign, nonatomic) BOOL               gradientViewController;
+
+@property (strong, nonatomic) UIImage    *backgroundImage;
+@property (assign, nonatomic) BOOL       scaleBackgroundImageView;    // 抽屉背景是否缩放
+@property (assign, nonatomic) CGFloat    backgroundImageViewScaleValue;
+
+@property (strong, nonatomic) id         parallaxMenuMinimumRelativeValue;
+@property (strong, nonatomic) id         parallaxMenuMaximumRelativeValue;
+@property (strong, nonatomic) id         parallaxContentMinimumRelativeValue;
+@property (strong, nonatomic) id         parallaxContentMaximumRelativeValue;
+@property (assign, nonatomic) BOOL       parallaxEnabled;
+
+
+
+
+@property (weak, nonatomic) id <EZSideMenuDelegate> delegate;
 
 - (id)initWithContentViewController:(UIViewController *)contentViewController menuViewController:(UIViewController *)menuViewController;
 - (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated;

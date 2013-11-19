@@ -9,5 +9,26 @@
 #import <UIKit/UIKit.h>
 #import "EZSideMenu.h"
 @interface EZViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UISwitch *panSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *scaleContentViewSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *scaleMenuViewControllerSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *scaleBackgroundImageViewSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *gradientViewControllerSwitch;
 
+- (IBAction)switchAction:(UISwitch *)sender;
+
+@property (weak, nonatomic) IBOutlet UITextField *animationDurationTextField;
+@property (weak, nonatomic) IBOutlet UITextField *contentViewScaleValueTextField;
+@property (weak, nonatomic) IBOutlet UITextField *contentViewInPortraitOffsetCenterXTextField;
+@property (weak, nonatomic) IBOutlet UITextField *contentViewInLandscapeOffsetCenterXTextField;
+@property (weak, nonatomic) IBOutlet UITextField *menuViewControllerScaleValueTextField;
+@property (weak, nonatomic) IBOutlet UITextField *backgroundImageViewScaleValueTextField;
+
+- (IBAction)animationDurationChanged:(UITextField *)sender;
+
+
+
+
+
+- (IBAction)closeKeyBoard:(id)sender;
 @end
