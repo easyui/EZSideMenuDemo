@@ -355,6 +355,7 @@ BOOL EZSideMenuUIKitIsFlatMode()
 
     if (!self.panGestureEnabled) {
         return;
+        
     }
 
     CGPoint point = [recognizer translationInView:self.view];
