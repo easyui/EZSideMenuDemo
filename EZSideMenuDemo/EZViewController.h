@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *scaleMenuViewControllerSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *scaleBackgroundImageViewSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *gradientViewControllerSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *onlySlideFromEdgeSwitch;
 
 - (IBAction)switchAction:(UISwitch *)sender;
 
@@ -23,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *contentViewInLandscapeOffsetCenterXTextField;
 @property (weak, nonatomic) IBOutlet UITextField *menuViewControllerScaleValueTextField;
 @property (weak, nonatomic) IBOutlet UITextField *backgroundImageViewScaleValueTextField;
+@property (weak, nonatomic) IBOutlet UITextField *slideEdgeValueTextField;
 
 - (IBAction)animationDurationChanged:(UITextField *)sender;
 

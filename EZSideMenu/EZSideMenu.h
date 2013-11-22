@@ -55,6 +55,9 @@ BOOL EZSideMenuUIKitIsFlatMode();
 @property (assign, nonatomic) BOOL       scaleBackgroundImageView;    // 抽屉背景是否缩放
 @property (assign, nonatomic) CGFloat    backgroundImageViewScaleValue;
 
+@property (assign, nonatomic) BOOL       onlySlideFromEdge;
+@property (assign, nonatomic) CGFloat    slideEdgeValue;
+
 @property (strong, nonatomic) id         parallaxMenuMinimumRelativeValue;
 @property (strong, nonatomic) id         parallaxMenuMaximumRelativeValue;
 @property (strong, nonatomic) id         parallaxContentMinimumRelativeValue;

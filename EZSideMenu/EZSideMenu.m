@@ -61,10 +61,12 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 @interface EZSideMenu ()
 
-@property (strong, readwrite, nonatomic) UIImageView    *backgroundImageView;
-@property (assign, readwrite, nonatomic) BOOL           visible;
-@property (assign, readwrite, nonatomic) CGPoint        originalPoint;
-@property (strong, readwrite, nonatomic) UIButton       *contentButton; // 主界面上add上去的按钮
+@property (strong, nonatomic) UIImageView    *backgroundImageView;
+@property (assign, nonatomic) BOOL           visible;
+@property (assign, nonatomic) CGPoint        originalPoint;
+@property (strong, nonatomic) UIButton       *contentButton; // 主界面上add上去的按钮
+@property (assign, nonatomic) BOOL        isSideFromEdge;
+
 
 @end
 
@@ -110,6 +112,9 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     _menuViewControllerScaleValue = 1.5;
     _gradientViewController = YES;
 
+    _onlySlideFromEdge = NO;
+    _slideEdgeValue = 25.f;
+    
     _parallaxEnabled = YES;
     _parallaxMenuMinimumRelativeValue = @(-15);
     _parallaxMenuMaximumRelativeValue = @(15);
@@ -385,11 +390,31 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     }
 }
 
+
+
 #pragma mark -
 #pragma mark Gesture recognizer
 
 - (void)panGestureRecognized:(UIPanGestureRecognizer *)recognizer
 {
+//    CGPoint startPoint = [recognizer locationInView:self.view];
+//    NSLog(@"%@",NSStringFromCGPoint(startPoint));
+    if (self.onlySlideFromEdge &&!self.visible) {
+        if (recognizer.state == UIGestureRecognizerStateBegan) {
+            CGPoint startPoint = [recognizer locationInView:self.contentViewController.view];
+            if (startPoint.x < self.slideEdgeValue) {
+                self.isSideFromEdge = YES;
+            }else{
+                self.isSideFromEdge = NO;
+            }
+        }
+        if (!self.isSideFromEdge) {
+            return;
+        }
+    }
+
+    
+    
     if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didRecognizePanGesture:)]) {
         [self.delegate sideMenu:self didRecognizePanGesture:recognizer];
     }

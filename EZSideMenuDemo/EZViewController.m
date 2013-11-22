@@ -44,12 +44,14 @@
      self.scaleMenuViewControllerSwitch.on = self.sideMenuViewController.scaleMenuViewController;
      self.scaleBackgroundImageViewSwitch.on = self.sideMenuViewController.scaleBackgroundImageView;
     self.gradientViewControllerSwitch.on = self.sideMenuViewController.gradientViewController;
+    self.onlySlideFromEdgeSwitch.on = self.sideMenuViewController.onlySlideFromEdge;
       self.animationDurationTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.animationDuration];
        self.contentViewScaleValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewScaleValue];
       self.contentViewInPortraitOffsetCenterXTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewInPortraitOffsetCenterX];
       self.contentViewInLandscapeOffsetCenterXTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewInLandscapeOffsetCenterX];
      self.menuViewControllerScaleValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.menuViewControllerScaleValue];
      self.backgroundImageViewScaleValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.backgroundImageViewScaleValue];
+    self.slideEdgeValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.slideEdgeValue];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -76,6 +78,8 @@
     }else if (self.gradientViewControllerSwitch == sender) {
         self.sideMenuViewController.gradientViewController = self.gradientViewControllerSwitch.on;
         self.sideMenuViewController.menuViewController.view.alpha =1.f;
+    }else if (self.onlySlideFromEdgeSwitch == sender) {
+        self.sideMenuViewController.onlySlideFromEdge = self.onlySlideFromEdgeSwitch.on;
     }
 }
 - (IBAction)animationDurationChanged:(UITextField *)sender {
@@ -91,6 +95,8 @@
         self.sideMenuViewController.menuViewControllerScaleValue =  [self.menuViewControllerScaleValueTextField.text doubleValue];
     }else if (sender == self.backgroundImageViewScaleValueTextField) {
         self.sideMenuViewController.backgroundImageViewScaleValue =  [self.backgroundImageViewScaleValueTextField.text doubleValue];
+    }else if (sender == self.slideEdgeValueTextField) {
+        self.sideMenuViewController.slideEdgeValue =  [self.slideEdgeValueTextField.text doubleValue];
     }
 
 }
