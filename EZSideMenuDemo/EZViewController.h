@@ -13,7 +13,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *scaleContentViewSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *scaleMenuViewControllerSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *scaleBackgroundImageViewSwitch;
-@property (weak, nonatomic) IBOutlet UISwitch *gradientViewControllerSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *gradientMenuViewControllerSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *onlySlideFromEdgeSwitch;
 
 - (IBAction)switchAction:(UISwitch *)sender;

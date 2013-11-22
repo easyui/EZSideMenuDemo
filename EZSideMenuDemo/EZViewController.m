@@ -43,7 +43,7 @@
      self.scaleContentViewSwitch.on = self.sideMenuViewController.scaleContentView;
      self.scaleMenuViewControllerSwitch.on = self.sideMenuViewController.scaleMenuViewController;
      self.scaleBackgroundImageViewSwitch.on = self.sideMenuViewController.scaleBackgroundImageView;
-    self.gradientViewControllerSwitch.on = self.sideMenuViewController.gradientViewController;
+    self.gradientMenuViewControllerSwitch.on = self.sideMenuViewController.gradientMenuViewController;
     self.onlySlideFromEdgeSwitch.on = self.sideMenuViewController.onlySlideFromEdge;
       self.animationDurationTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.animationDuration];
        self.contentViewScaleValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewScaleValue];
@@ -75,8 +75,8 @@
         self.sideMenuViewController.scaleMenuViewController = self.scaleMenuViewControllerSwitch.on;
     }else if (self.scaleBackgroundImageViewSwitch == sender) {
         self.sideMenuViewController.scaleBackgroundImageView = self.scaleBackgroundImageViewSwitch.on;
-    }else if (self.gradientViewControllerSwitch == sender) {
-        self.sideMenuViewController.gradientViewController = self.gradientViewControllerSwitch.on;
+    }else if (self.gradientMenuViewControllerSwitch == sender) {
+        self.sideMenuViewController.gradientMenuViewController = self.gradientMenuViewControllerSwitch.on;
         self.sideMenuViewController.menuViewController.view.alpha =1.f;
     }else if (self.onlySlideFromEdgeSwitch == sender) {
         self.sideMenuViewController.onlySlideFromEdge = self.onlySlideFromEdgeSwitch.on;
@@ -102,6 +102,6 @@
 }
 
 - (IBAction)closeKeyBoard:(id)sender {
-    [self.animationDurationTextField resignFirstResponder];
+     [self.view.window endEditing:YES];//退出键盘等
 }
 @end

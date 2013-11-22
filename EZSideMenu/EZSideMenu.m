@@ -110,7 +110,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     _backgroundImageViewScaleValue = 1.7f;
     _scaleMenuViewController = YES;
     _menuViewControllerScaleValue = 1.5;
-    _gradientViewController = YES;
+    _gradientMenuViewController = YES;
 
     _onlySlideFromEdge = NO;
     _slideEdgeValue = 25.f;
@@ -166,7 +166,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     [self re_displayController:self.menuViewController frame:self.view.frame];
     [self re_displayController:self.contentViewController frame:self.view.frame];
 
-    if (self.gradientViewController) {
+    if (self.gradientMenuViewController) {
         self.menuViewController.view.alpha = 0;
     }
 
@@ -219,7 +219,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         self.menuViewController.view.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
     }
 
-    if (self.gradientViewController) {
+    if (self.gradientMenuViewController) {
         self.menuViewController.view.alpha = 0;
     }
 
@@ -252,7 +252,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
             self.menuViewController.view.transform = CGAffineTransformIdentity;
         }
 
-        if (self.gradientViewController) {
+        if (self.gradientMenuViewController) {
             self.menuViewController.view.alpha = 1.f;
         }
     } completion:^(BOOL finished) {
@@ -289,7 +289,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
             self.menuViewController.view.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
         }
 
-        if (self.gradientViewController) {
+        if (self.gradientMenuViewController) {
             self.menuViewController.view.alpha = 0;
         }
 
@@ -455,7 +455,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         CGFloat backgroundViewScale = self.backgroundImageViewScaleValue - (0.7f * delta);
         CGFloat menuViewScale = self.menuViewControllerScaleValue - (0.5f * delta);
 
-        if (self.gradientViewController) {
+        if (self.gradientMenuViewController) {
             self.menuViewController.view.alpha = delta;
         }
 

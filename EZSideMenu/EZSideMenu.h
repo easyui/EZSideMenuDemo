@@ -49,7 +49,7 @@ BOOL EZSideMenuUIKitIsFlatMode();
 @property (strong, nonatomic) UIViewController   *menuViewController;
 @property (assign, nonatomic) BOOL               scaleMenuViewController; // 抽屉是否缩放
 @property (assign, nonatomic) CGFloat            menuViewControllerScaleValue;
-@property (assign, nonatomic) BOOL               gradientViewController;//抽屉渐变
+@property (assign, nonatomic) BOOL               gradientMenuViewController;//抽屉渐变
 
 @property (strong, nonatomic) UIImage    *backgroundImage;
 @property (assign, nonatomic) BOOL       scaleBackgroundImageView;    // 抽屉背景是否缩放
