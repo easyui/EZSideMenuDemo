@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "EZSideMenu.h"
 @interface EZMenuViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
-
+@property (weak, nonatomic) IBOutlet UITableView *menuTableview;
+@property (strong, nonatomic) NSDictionary *menuDic;
 @end

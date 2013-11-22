@@ -134,7 +134,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 {
     [super viewDidLoad];
 
-    // 打开抽屉后主界面的中心点便宜
+    // 打开抽屉后主界面的中心点偏移
     if (!_contentViewInLandscapeOffsetCenterX) {
         _contentViewInLandscapeOffsetCenterX = CGRectGetHeight(self.view.frame) + 30.f;
     }
@@ -201,6 +201,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 - (void)presentMenuViewController
 {
+    //打开抽屉前初始化动画参数
     if (self.scaleBackgroundImageView) {
         self.backgroundImageView.transform = CGAffineTransformIdentity;
         self.backgroundImageView.frame = self.view.bounds;
@@ -226,7 +227,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 - (void)showMenuViewController
 {
-    [self.view.window endEditing:YES];
+    [self.view.window endEditing:YES];//退出键盘等
     [self addContentButton];
 
     [UIView animateWithDuration:self.animationDuration animations:^{
@@ -317,7 +318,24 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     self.contentButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.contentViewController.view addSubview:self.contentButton];
 }
+#pragma mark - animation
 
+- (void)flashMenu{
+    // Animate to deappear
+    __typeof (&*self) __weak weakSelf = self;
+    self.menuViewController.view.transform = CGAffineTransformScale(self.menuViewController.view.transform, 0.9, 0.9);
+    [UIView animateWithDuration:0.5 animations:^{
+        weakSelf.menuViewController.view.transform = CGAffineTransformIdentity;
+    }];
+    [UIView animateWithDuration:0.6 animations:^{
+        weakSelf.menuViewController.view.alpha = 0;
+    }];
+
+    [UIView animateWithDuration:0.6 animations:^{
+        weakSelf.menuViewController.view.alpha = 1;
+    }];
+
+}
 #pragma mark -
 #pragma mark Motion effects
 

@@ -27,7 +27,6 @@
 {
     [super viewDidLoad];
 	self.title = @"Second Controller";
-    self.view.backgroundColor = [UIColor orangeColor];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu"
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self

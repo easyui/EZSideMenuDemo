@@ -14,7 +14,6 @@
     if (kCFCoreFoundationVersionNumber > kCFCoreFoundationVersionNumber_iOS_6_1) { \
         __VA_ARGS__                                                                \
     }
-
 #else
   #define IF_IOS7_OR_GREATER(...)
 #endif
@@ -50,7 +49,7 @@ BOOL EZSideMenuUIKitIsFlatMode();
 @property (strong, nonatomic) UIViewController   *menuViewController;
 @property (assign, nonatomic) BOOL               scaleMenuViewController; // 抽屉是否缩放
 @property (assign, nonatomic) CGFloat            menuViewControllerScaleValue;
-@property (assign, nonatomic) BOOL               gradientViewController;
+@property (assign, nonatomic) BOOL               gradientViewController;//抽屉渐变
 
 @property (strong, nonatomic) UIImage    *backgroundImage;
 @property (assign, nonatomic) BOOL       scaleBackgroundImageView;    // 抽屉背景是否缩放
@@ -71,6 +70,7 @@ BOOL EZSideMenuUIKitIsFlatMode();
 - (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated;
 - (void)presentMenuViewController;
 - (void)hideMenuViewController;
+- (void)flashMenu;
 
 @end
 
