@@ -270,6 +270,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 - (void)hideMenuViewController
 {
+    [self.view.window endEditing:YES];
     if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willHideMenuViewController:)]) {
         [self.delegate sideMenu:self willHideMenuViewController:self.menuViewController];
     }
@@ -339,7 +340,6 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     [UIView animateWithDuration:0.6 animations:^{
         weakSelf.menuViewController.view.alpha = 1;
     }];
-
 }
 #pragma mark -
 #pragma mark Motion effects

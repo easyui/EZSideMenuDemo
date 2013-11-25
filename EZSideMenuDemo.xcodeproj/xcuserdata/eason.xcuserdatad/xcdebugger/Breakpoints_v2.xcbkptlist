@@ -90,12 +90,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "EZSideMenu/EZSideMenu.m"
-            timestampString = "406565755.833336"
+            timestampString = "407054279.540288"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "520"
-            endingLineNumber = "520"
-            landmarkName = "-preferredStatusBarStyle"
+            startingLineNumber = "519"
+            endingLineNumber = "519"
+            landmarkName = "-setContentViewController:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

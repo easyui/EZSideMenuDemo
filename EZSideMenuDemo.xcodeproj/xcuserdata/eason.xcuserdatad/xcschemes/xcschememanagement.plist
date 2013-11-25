@@ -9,9 +9,45 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>NLSideMenuDemo.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<true/>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
+		<key>NLSileMenuDemo.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>asd.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>9BB3103D1841F65F00681C25</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9BB310681841FC2A00681C25</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9BB3108E1841FC8600681C25</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9BEC9911183B4BDF00CB5748</key>
 		<dict>
 			<key>primary</key>
