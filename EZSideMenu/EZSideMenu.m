@@ -262,9 +262,9 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
             [self.delegate sideMenu:self didShowMenuViewController:self.menuViewController];
         }
 
-        self.visible = YES;
+       
     }];
-
+    self.visible = YES;
     [self updateStatusBar];
 }
 
@@ -593,13 +593,13 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
     IF_IOS7_OR_GREATER(
         statusBarStyle = self.visible ? self.menuViewController.preferredStatusBarStyle : self.contentViewController.preferredStatusBarStyle;
-
+/*
         if (self.contentViewController.view.frame.origin.y > 10) {
             statusBarStyle = self.menuViewController.preferredStatusBarStyle;
         } else {
             statusBarStyle = self.contentViewController.preferredStatusBarStyle;
         }
-
+*/
         );
     return statusBarStyle;
 }

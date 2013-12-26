@@ -23,6 +23,7 @@
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
                                                                             action:@selector(showMenu)];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 - (void)didReceiveMemoryWarning
