@@ -105,3 +105,25 @@
      [self.view.window endEditing:YES];//退出键盘等
 }
 @end
+/*
+@implementation UIViewController (IOS6Support)
+
+#if 60000 <= __IPHONE_OS_VERSION_MAX_ALLOWED
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if (UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM()) {
+        return UIInterfaceOrientationMaskLandscape;
+    } else {
+        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    }
+}
+#endif
+
+@end
+
+*/

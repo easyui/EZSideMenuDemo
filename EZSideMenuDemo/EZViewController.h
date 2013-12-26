@@ -34,3 +34,7 @@
 
 - (IBAction)closeKeyBoard:(id)sender;
 @end
+/*
+@interface UIViewController (IOS6Support)
+@end
+*/
