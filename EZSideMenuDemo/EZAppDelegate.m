@@ -9,6 +9,7 @@
 #import "EZAppDelegate.h"
 #import "EZViewController.h"
 #import "EZMenuViewController.h"
+#import "EZRightMenuViewController.h"
 
 
 @implementation EZAppDelegate
@@ -20,7 +21,8 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[EZViewController alloc] initWithNibName:@"EZViewController_iPhone" bundle:nil]];
         EZMenuViewController *menuViewController = [[EZMenuViewController alloc] initWithNibName:@"EZMenuViewController" bundle:nil];
-        EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController menuViewController:menuViewController];
+         EZRightMenuViewController *rgihtMenuViewController = [[EZRightMenuViewController alloc] initWithNibName:@"EZRightMenuViewController" bundle:nil];
+        EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:menuViewController rightMenuViewController:rgihtMenuViewController];
         sideMenuViewController.backgroundImage = [UIImage imageNamed:@"Stars"];
         sideMenuViewController.delegate = self;
         self.window.rootViewController = sideMenuViewController;
@@ -31,7 +33,8 @@
 
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[EZViewController alloc] initWithNibName:@"EZViewController_iPhone" bundle:nil]];
             EZMenuViewController *menuViewController = [[EZMenuViewController alloc] initWithNibName:@"EZMenuViewController" bundle:nil];
-            EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController menuViewController:menuViewController];
+        EZRightMenuViewController *rgihtMenuViewController = [[EZRightMenuViewController alloc] initWithNibName:@"EZRightMenuViewController" bundle:nil];
+        EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:menuViewController rightMenuViewController:rgihtMenuViewController];
             sideMenuViewController.backgroundImage = [UIImage imageNamed:@"Stars"];
             sideMenuViewController.delegate = self;
             self.window.rootViewController = sideMenuViewController;

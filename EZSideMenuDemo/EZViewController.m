@@ -22,8 +22,15 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Menu"
                                                                              style:UIBarButtonItemStylePlain
                                                                             target:self
-                                                                            action:@selector(showMenu)];
+                                                                            action:@selector(showLeftMenu)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Right"
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(showRightMenu)];
+    if([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0){
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -33,9 +40,14 @@
 }
 
 
-- (void)showMenu
+- (void)showLeftMenu
 {
-    [self.sideMenuViewController presentMenuViewController];
+    [self.sideMenuViewController presentLeftMenuViewController];
+}
+
+- (void)showRightMenu
+{
+    [self.sideMenuViewController presentRightMenuViewController];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -78,7 +90,7 @@
         self.sideMenuViewController.scaleBackgroundImageView = self.scaleBackgroundImageViewSwitch.on;
     }else if (self.gradientMenuViewControllerSwitch == sender) {
         self.sideMenuViewController.gradientMenuViewController = self.gradientMenuViewControllerSwitch.on;
-        self.sideMenuViewController.menuViewController.view.alpha =1.f;
+        self.sideMenuViewController.menuView.alpha =1.f;
     }else if (self.onlySlideFromEdgeSwitch == sender) {
         self.sideMenuViewController.onlySlideFromEdge = self.onlySlideFromEdgeSwitch.on;
     }

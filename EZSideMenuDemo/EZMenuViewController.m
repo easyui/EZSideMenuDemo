@@ -62,11 +62,13 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_1
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleBlackTranslucent; // UIStatusBarStyleLightContent;
+    return  UIStatusBarStyleLightContent;
 }
+
+#endif
 
 #pragma mark -
 #pragma mark UITableView Delegate

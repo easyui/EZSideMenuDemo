@@ -18,7 +18,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[NLViewController alloc] initWithNibName:@"NLViewController_iPhone" bundle:nil]];
         NLMenuViewController *menuViewController = [[NLMenuViewController alloc] initWithNibName:@"NLMenuViewController" bundle:nil];
-        EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController menuViewController:menuViewController];
+        EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:menuViewController rightMenuViewController:nil];
         sideMenuViewController.contentViewInPortraitOffsetCenterX = 388.f;
         sideMenuViewController.scaleBackgroundImageView = NO;
         sideMenuViewController.scaleMenuViewController = NO;

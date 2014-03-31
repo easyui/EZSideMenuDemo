@@ -28,7 +28,7 @@
 
 - (void)showMenu
 {
-    [self.sideMenuViewController presentMenuViewController];
+    [self.sideMenuViewController presentLeftMenuViewController];
 }
 
 - (void)didReceiveMemoryWarning

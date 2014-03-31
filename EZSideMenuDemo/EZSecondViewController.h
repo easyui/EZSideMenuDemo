@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "EZSideMenu.h"
 @interface EZSecondViewController : UIViewController
+- (IBAction)pushButtonAction:(UIButton *)sender;
 
 @end
