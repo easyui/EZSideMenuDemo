@@ -130,7 +130,7 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
     _menuView = [[UIView alloc] init];
 
-    _contentViewShadowEnabled = YES;
+    _contentViewShadowEnabled = NO;
     _contentViewShadowColor = [UIColor blackColor];
     _contentViewShadowOffset = CGSizeZero;
     _contentViewShadowOpacity = 0.4f;

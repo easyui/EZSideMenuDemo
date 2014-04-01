@@ -58,6 +58,7 @@
      self.scaleBackgroundImageViewSwitch.on = self.sideMenuViewController.scaleBackgroundImageView;
     self.gradientMenuViewControllerSwitch.on = self.sideMenuViewController.gradientMenuViewController;
     self.onlySlideFromEdgeSwitch.on = self.sideMenuViewController.onlySlideFromEdge;
+    self.contentViewShadowSwitch.on = self.sideMenuViewController.contentViewShadowEnabled;
       self.animationDurationTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.animationDuration];
        self.contentViewScaleValueTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewScaleValue];
       self.contentViewInPortraitOffsetCenterXTextField.text = [NSString stringWithFormat:@"%f",self.sideMenuViewController.contentViewInPortraitOffsetCenterX];
@@ -93,7 +94,11 @@
         self.sideMenuViewController.menuView.alpha =1.f;
     }else if (self.onlySlideFromEdgeSwitch == sender) {
         self.sideMenuViewController.onlySlideFromEdge = self.onlySlideFromEdgeSwitch.on;
+    }else if (self.contentViewShadowSwitch == sender) {
+        self.sideMenuViewController.contentViewShadowEnabled = self.contentViewShadowSwitch.on;
     }
+    
+    
 }
 - (IBAction)animationDurationChanged:(UITextField *)sender {
     if (sender == self.animationDurationTextField) {
