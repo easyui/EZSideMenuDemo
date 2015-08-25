@@ -149,7 +149,7 @@
         cell.selectedBackgroundView = [[UIView alloc] init];
     }
 
-    NSArray *arr = [self.menuDic objectForKey:[NSString stringWithFormat:@"%d", indexPath.row]];
+    NSArray *arr = [self.menuDic objectForKey:[NSString stringWithFormat:@"%ld", (long)indexPath.row]];
     cell.textLabel.text = arr[0];
     cell.imageView.image = [UIImage imageNamed:arr[1]];
 
