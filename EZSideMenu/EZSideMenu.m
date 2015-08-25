@@ -1,179 +1,215 @@
+//
+//  EZSideMenu.m
+//  EZSideMenuDemo
+//
+//  Created by yangjun zhu on 15/8/25.
+//  Copyright (c) 2015年 Cactus. All rights reserved.
+//
+
 #import "EZSideMenu.h"
-/////////////////start
-BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
-{
-    static BOOL             isUIKitFlatMode = NO;
-    static dispatch_once_t  onceToken;
-    
-    dispatch_once(&onceToken, ^{
-        if (floor(NSFoundationVersionNumber) > 993.0) {
-            // If your app is running in legacy mode, tintColor will be nil - else it must be set to some color.
-            if (UIApplication.sharedApplication.keyWindow) {
-                isUIKitFlatMode = [UIApplication.sharedApplication.delegate.window performSelector:@selector(tintColor)] != nil;
-            } else {
-                // Possible that we're called early on (e.g. when used in a Storyboard). Adapt and use a temporary window.
-                isUIKitFlatMode = [[UIWindow new] performSelector:@selector(tintColor)] != nil;
-            }
-        }
-    });
-    return isUIKitFlatMode;
-}
 
-////////////////////end
-
-///////
 @implementation UIViewController (EZSideMenu)
-
-- (void)re_displayController:(UIViewController *)controller frame:(CGRect)frame
-{
-    [self addChildViewController:controller];
-    controller.view.frame = frame;
-    [self.view addSubview:controller.view];
-    [controller didMoveToParentViewController:self];
-}
-
-- (void)re_hideController:(UIViewController *)controller
-{
-    [controller willMoveToParentViewController:nil];
-    [controller.view removeFromSuperview];
-    [controller removeFromParentViewController];
-}
 
 - (EZSideMenu *)sideMenuViewController
 {
     UIViewController *iter = self.parentViewController;
-    
     while (iter) {
         if ([iter isKindOfClass:[EZSideMenu class]]) {
             return (EZSideMenu *)iter;
-        } else if (iter.parentViewController && (iter.parentViewController != iter)) {
+        } else if (iter.parentViewController && iter.parentViewController != iter) {
             iter = iter.parentViewController;
         } else {
             iter = nil;
         }
     }
-    
     return nil;
 }
 
+#pragma mark -
+#pragma mark IB Action Helper methods
+
+- (IBAction)presentLeftMenuViewController:(id)sender
+{
+    [self.sideMenuViewController presentLeftMenuViewController];
+}
+
+- (IBAction)presentRightMenuViewController:(id)sender
+{
+    [self.sideMenuViewController presentRightMenuViewController];
+}
+
 @end
-///////
+
 
 @interface EZSideMenu ()
 
-@property (strong, nonatomic) UIImageView       *backgroundImageView;
-@property (assign, nonatomic) BOOL              visible;
-@property (assign, nonatomic) BOOL              leftMenuVisible;
-@property (assign, nonatomic) BOOL              rightMenuVisible;
-@property (assign, nonatomic) CGPoint           originalPoint;
-@property (strong, nonatomic) UIButton          *contentButton; // 主界面上add上去的按钮
-@property (assign, readwrite, nonatomic) BOOL   didNotifyDelegate;
-
+@property (strong, readwrite, nonatomic) UIImageView *backgroundImageView;
+@property (assign, readwrite, nonatomic) BOOL visible;
+@property (assign, readwrite, nonatomic) BOOL leftMenuVisible;
+@property (assign, readwrite, nonatomic) BOOL rightMenuVisible;
+@property (assign, readwrite, nonatomic) CGPoint originalPoint;
+@property (strong, readwrite, nonatomic) UIButton *contentButton;
+@property (strong, readwrite, nonatomic) UIView *menuViewContainer;
+@property (strong, readwrite, nonatomic) UIView *contentViewContainer;
+@property (assign, readwrite, nonatomic) BOOL didNotifyDelegate;
 
 @end
 
 @implementation EZSideMenu
 
+#pragma mark -
+#pragma mark Instance lifecycle
+
 - (id)init
 {
     self = [super init];
-    
     if (self) {
-        [self __commonInit];
+        [self commonInit];
     }
-    
     return self;
 }
 
+
+// storeboard
 - (id)initWithCoder:(NSCoder *)decoder
 {
     self = [super initWithCoder:decoder];
-    
     if (self) {
-        [self __commonInit];
+        [self commonInit];
     }
-    
     return self;
 }
 
-- (void)__commonInit
+#if __IPHONE_8_0
+- (void)awakeFromNib
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    self.wantsFullScreenLayout = YES;
-#pragma clang diagnostic pop
-    _animationDuration = 0.3f;
-    _panGestureEnabled = YES;
-    _interactivePopGestureRecognizerEnabled = YES;
+    [super awakeFromNib];
+    if (self.contentViewStoryboardID) {
+        self.contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.contentViewStoryboardID];
+    }
+    if (self.leftMenuViewStoryboardID) {
+        self.leftMenuViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.leftMenuViewStoryboardID];
+    }
+    if (self.rightMenuViewStoryboardID) {
+        self.rightMenuViewController = [self.storyboard instantiateViewControllerWithIdentifier:self.rightMenuViewStoryboardID];
+    }
+}
+#endif
+
+- (void)commonInit
+{
+    _menuViewContainer = [[UIView alloc] init];
+    _contentViewContainer = [[UIView alloc] init];
     
+    _animationDuration = 0.35f;
+    //主内容偏移量
+    _contentViewInLandscapeOffsetCenterX = 30.f;
+    _contentViewInPortraitOffsetCenterX = 30.f;
+    
+    //手势
+    _panGestureEnabled = YES;
+    _panFromEdge = YES;
+    _panMinimumOpenThreshold = 60.0;
+    _interactivePopGestureRecognizerEnabled = YES;
+    _bouncesHorizontally = YES;
+    
+    //透明度渐变
+    _fadeMenuView = YES;
+    _contentViewFadeOutAlpha = 1.0f;
+    
+    //大小改变
     _scaleContentView = YES;
     _contentViewScaleValue = 0.7f;
-    
+    _scaleMenuView = YES;
+    _menuViewControllerScaleValue = 1.5f;
     _scaleBackgroundImageView = YES;
     _backgroundImageViewScaleValue = 1.7f;
-    _scaleMenuViewController = YES;
-    _menuViewControllerScaleValue = 1.5;
-    _gradientMenuViewController = YES;
     
-    _panMinimumOpenThreshold = 60.0;
-    
-    _bouncesHorizontally = YES;
-    _onlySlideFromEdge = YES;
-    _slideEdgeValue = 25.f;
-    
-    _parallaxEnabled = YES;
-    _parallaxMenuMinimumRelativeValue = -15;
-    _parallaxMenuMaximumRelativeValue = 15;
-    
-    _parallaxContentMinimumRelativeValue = -25;
-    _parallaxContentMaximumRelativeValue = 25;
-    
-    _menuView = [[UIView alloc] init];
-    
+    //Shadow
     _contentViewShadowEnabled = NO;
     _contentViewShadowColor = [UIColor blackColor];
     _contentViewShadowOffset = CGSizeZero;
     _contentViewShadowOpacity = 0.4f;
     _contentViewShadowRadius = 8.0f;
+    
+    //MotionEffects效果
+    _parallaxEnabled = YES;
+    _parallaxMenuMinimumRelativeValue = -15;
+    _parallaxMenuMaximumRelativeValue = 15;
+    _parallaxContentMinimumRelativeValue = -25;
+    _parallaxContentMaximumRelativeValue = 25;
+    
 }
 
-// - (id)initWithContentViewController:(UIViewController *)contentViewController menuViewController:(UIViewController *)menuViewController
-// {
-//    self = [self init];
-//
-//    if (self) {
-//        _contentViewController = contentViewController;
-//        _menuViewController = menuViewController;
-//
-//    }
-//
-//    return self;
-// }
+#pragma mark -
+#pragma mark Public methods
+
 - (id)initWithContentViewController:(UIViewController *)contentViewController leftMenuViewController:(UIViewController *)leftMenuViewController rightMenuViewController:(UIViewController *)rightMenuViewController
 {
     self = [self init];
-    
     if (self) {
         _contentViewController = contentViewController;
         _leftMenuViewController = leftMenuViewController;
         _rightMenuViewController = rightMenuViewController;
     }
-    
     return self;
 }
+
+- (void)presentLeftMenuViewController
+{
+    [self __presentMenuViewContainerWithMenuViewController:self.leftMenuViewController];
+    //    [self __showLeftMenuViewController];
+    [self __showMenuViewController:self.leftMenuViewController];
+}
+
+- (void)presentRightMenuViewController
+{
+    [self __presentMenuViewContainerWithMenuViewController:self.rightMenuViewController];
+    //    [self __showRightMenuViewController];
+    [self __showMenuViewController:self.rightMenuViewController];
+}
+
+- (void)hideMenuViewController
+{
+    [self __hideMenuViewControllerAnimated:YES];
+}
+
+- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated
+{
+    if (_contentViewController == contentViewController)
+    {
+        return;
+    }
+    
+    if (!animated) {
+        [self setContentViewController:contentViewController];
+    } else {
+        [self addChildViewController:contentViewController];
+        contentViewController.view.alpha = 0;
+        contentViewController.view.frame = self.contentViewContainer.bounds;
+        [self.contentViewContainer addSubview:contentViewController.view];
+        [UIView animateWithDuration:self.animationDuration animations:^{
+            contentViewController.view.alpha = 1;
+        } completion:^(BOOL finished) {
+            [self __hideViewController:self.contentViewController];
+            [contentViewController didMoveToParentViewController:self];
+            _contentViewController = contentViewController;
+            
+            [self __statusBarNeedsAppearanceUpdate];
+            [self __updateContentViewShadow];
+            
+            if (self.visible) {
+                [self __addContentViewControllerMotionEffects];
+            }
+        }];
+    }
+}
+
+#pragma mark View life cycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // 打开抽屉后主界面的中心点偏移
-    if (!_contentViewInLandscapeOffsetCenterX) {
-        _contentViewInLandscapeOffsetCenterX = CGRectGetHeight(self.view.frame) + 30.f;
-    }
-    
-    if (!_contentViewInPortraitOffsetCenterX) {
-        _contentViewInPortraitOffsetCenterX = CGRectGetWidth(self.view.frame) + 30.f;
-    }
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.backgroundImageView = ({
@@ -183,274 +219,363 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         imageView;
     });
-    [self.view addSubview:self.backgroundImageView];
     self.contentButton = ({
         UIButton *button = [[UIButton alloc] initWithFrame:CGRectNull];
         [button addTarget:self action:@selector(hideMenuViewController) forControlEvents:UIControlEventTouchUpInside];
         button;
     });
     
-    [self.view addSubview:self.menuView];
-    self.menuView.frame = self.view.bounds;
-    self.menuView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:self.backgroundImageView];
+    [self.view addSubview:self.menuViewContainer];
+    [self.view addSubview:self.contentViewContainer];
     
-    [self __displayController:self.leftMenuViewController];
-    [self __displayController:self.rightMenuViewController];
-    [self re_displayController:self.contentViewController frame:self.view.frame];
-    
-    if (self.gradientMenuViewController) {
-        self.menuView.alpha = 0;
+    self.menuViewContainer.frame = self.view.bounds;
+    self.menuViewContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if (self.leftMenuViewController) {
+        [self addChildViewController:self.leftMenuViewController];
+        self.leftMenuViewController.view.frame = self.view.bounds;
+        self.leftMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.menuViewContainer addSubview:self.leftMenuViewController.view];
+        [self.leftMenuViewController didMoveToParentViewController:self];
+    }
+    if (self.rightMenuViewController) {
+        [self addChildViewController:self.rightMenuViewController];
+        self.rightMenuViewController.view.frame = self.view.bounds;
+        self.rightMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.menuViewContainer addSubview:self.rightMenuViewController.view];
+        [self.rightMenuViewController didMoveToParentViewController:self];
     }
     
-    if (self.scaleBackgroundImageView) {
+    self.contentViewContainer.frame = self.view.bounds;
+    self.contentViewContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addChildViewController:self.contentViewController];
+    self.contentViewController.view.frame = self.view.bounds;
+    [self.contentViewContainer addSubview:self.contentViewController.view];
+    [self.contentViewController didMoveToParentViewController:self];
+    
+    self.menuViewContainer.alpha = self.fadeMenuView ? 0.0f : 1.0f;
+    if (self.scaleBackgroundImageView)
         self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
-    }
     
     [self __addMenuViewControllerMotionEffects];
     
     if (self.panGestureEnabled) {
         self.view.multipleTouchEnabled = NO;
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
-        panGestureRecognizer.delegate = self; //////
+        panGestureRecognizer.delegate = self;
         [self.view addGestureRecognizer:panGestureRecognizer];
     }
     
-    [self __refreshContentViewShadow];
-    
+    [self __updateContentViewShadow];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
-
-#pragma mark - action
-
-- (void)presentLeftMenuViewController
-{
-    [self __presentMenuViewContainerWithMenuViewController:self.leftMenuViewController];
-    [self __showLeftMenuViewController];
-}
-
-- (void)presentRightMenuViewController
-{
-    [self __presentMenuViewContainerWithMenuViewController:self.rightMenuViewController];
-    [self __showRightMenuViewController];
-}
+#pragma mark -
+#pragma mark Private methods
 
 - (void)__presentMenuViewContainerWithMenuViewController:(UIViewController *)menuViewController
 {
-    // 打开抽屉前初始化动画参数
+    /*初始化状态*/
+    //组件
     if (self.scaleBackgroundImageView) {
         self.backgroundImageView.transform = CGAffineTransformIdentity;
         self.backgroundImageView.frame = self.view.bounds;
         self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
     }
     
-    if (self.scaleMenuViewController) {
-        self.menuView.transform = CGAffineTransformIdentity;
-        self.menuView.frame = self.view.bounds;
-        self.menuView.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
+    //菜单
+    self.menuViewContainer.transform = CGAffineTransformIdentity;
+    self.menuViewContainer.frame = self.view.bounds;
+    if (self.scaleMenuView) {
+        self.menuViewContainer.transform = CGAffineTransformIdentity;
+        self.menuViewContainer.frame = self.view.bounds;
+        self.menuViewContainer.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
     }
+    self.menuViewContainer.alpha = self.fadeMenuView ? 0.0f : 1.0f;
     
-    if (self.gradientMenuViewController) {
-        self.menuView.alpha = 0;
-    }
+    
     
     if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willShowMenuViewController:)]) {
         [self.delegate sideMenu:self willShowMenuViewController:menuViewController];
     }
 }
 
-- (void)__showLeftMenuViewController
+- (void)__showMenuViewController:(UIViewController *)menuViewController
 {
-    if (!self.leftMenuViewController) {
+    if (!menuViewController) {
         return;
     }
     
-    self.leftMenuViewController.view.hidden = NO;
-    self.rightMenuViewController.view.hidden = YES;
-    [self.view.window endEditing:YES];   // 退出键盘等
+    //主内容
+    [self __resetContentViewScale];
+    [self __updateContentViewShadow];
     [self __addContentButton];
     
+    
+    self.leftMenuViewController.view.hidden = YES;
+    self.rightMenuViewController.view.hidden = YES;
+    menuViewController.view.hidden = NO;
+    
+    
+    [self.view.window endEditing:YES];// 退出键盘等
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    [menuViewController beginAppearanceTransition:YES animated:YES];
+    
     [UIView animateWithDuration:self.animationDuration animations:^{
-        if (self.scaleContentView) {
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
-        } else {
-            self.contentViewController.view.transform = CGAffineTransformIdentity;
-        }
-        
-        self.contentViewController.view.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX : self.contentViewInPortraitOffsetCenterX), self.contentViewController.view.center.y);
-        
-        if (self.scaleBackgroundImageView) {
+        //组件
+        if (self.scaleBackgroundImageView)
             self.backgroundImageView.transform = CGAffineTransformIdentity;
+        //菜单
+        self.menuViewContainer.alpha = self.fadeMenuView ? 1.0f : 1.0f;
+        self.menuViewContainer.transform = CGAffineTransformIdentity;
+        //主内容
+        if (self.scaleContentView) {
+            self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+        } else {
+            self.contentViewContainer.transform = CGAffineTransformIdentity;
         }
+        if(menuViewController == self.leftMenuViewController){
+            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? (self.contentViewInLandscapeOffsetCenterX + [self __viewGetWidth]) : (self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame))), self.contentViewContainer.center.y);
+        }else{
+            self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
+        }
+        self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
         
-        if (self.scaleMenuViewController) {
-            self.menuView.transform = CGAffineTransformIdentity;
-        }
-        
-        if (self.gradientMenuViewController) {
-            self.menuView.alpha = 1.f;
-        }
     } completion:^(BOOL finished) {
+        [menuViewController endAppearanceTransition];
         [self __addContentViewControllerMotionEffects];
         
         if (!self.visible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didShowMenuViewController:)]) {
-            [self.delegate sideMenu:self didShowMenuViewController:self.leftMenuViewController];
+            [self.delegate sideMenu:self didShowMenuViewController:menuViewController];
         }
         
         self.visible = YES;
-        self.leftMenuVisible = YES;
+        self.leftMenuVisible = (menuViewController == self.leftMenuViewController);
+        self.rightMenuVisible = (menuViewController == self.rightMenuViewController);
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        
     }];
     
     [self __statusBarNeedsAppearanceUpdate];
 }
 
-- (void)__showRightMenuViewController
+/*
+ - (void)__showLeftMenuViewController
+ {
+ if (!self.leftMenuViewController) {
+ return;
+ }
+ 
+ self.leftMenuViewController.view.hidden = NO;
+ self.rightMenuViewController.view.hidden = YES;
+ 
+ 
+ 
+ [self.view.window endEditing:YES];// 退出键盘等
+ [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+ [self.leftMenuViewController beginAppearanceTransition:YES animated:YES];
+ 
+ [UIView animateWithDuration:self.animationDuration animations:^{
+ //组件
+ if (self.scaleBackgroundImageView)
+ self.backgroundImageView.transform = CGAffineTransformIdentity;
+ //菜单
+ self.menuViewContainer.alpha = self.fadeMenuView ? 1.0f : 1.0f;
+ self.menuViewContainer.transform = CGAffineTransformIdentity;
+ //主内容
+ if (self.scaleContentView) {
+ self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+ } else {
+ self.contentViewContainer.transform = CGAffineTransformIdentity;
+ }
+ self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? (self.contentViewInLandscapeOffsetCenterX + [self __viewGetWidth]) : (self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame))), self.contentViewContainer.center.y);
+ self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
+ 
+ } completion:^(BOOL finished) {
+ [self.leftMenuViewController endAppearanceTransition];
+ [self __addContentViewControllerMotionEffects];
+ 
+ if (!self.visible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didShowMenuViewController:)]) {
+ [self.delegate sideMenu:self didShowMenuViewController:self.leftMenuViewController];
+ }
+ 
+ self.visible = YES;
+ self.leftMenuVisible = YES;
+ [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+ 
+ }];
+ 
+ [self __statusBarNeedsAppearanceUpdate];
+ }
+ 
+ - (void)__showRightMenuViewController
+ {
+ if (!self.rightMenuViewController) {
+ return;
+ }
+ 
+ 
+ self.leftMenuViewController.view.hidden = YES;
+ self.rightMenuViewController.view.hidden = NO;
+ 
+ [self.view.window endEditing:YES];
+ [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+ [self.rightMenuViewController beginAppearanceTransition:YES animated:YES];
+ 
+ [UIView animateWithDuration:self.animationDuration animations:^{
+ if (self.scaleBackgroundImageView)
+ self.backgroundImageView.transform = CGAffineTransformIdentity;
+ 
+ //菜单
+ self.menuViewContainer.alpha = self.fadeMenuView ? 1.0f : 1.0f;
+ self.menuViewContainer.transform = CGAffineTransformIdentity;
+ 
+ //主内容
+ if (self.scaleContentView) {
+ self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+ } else {
+ self.contentViewContainer.transform = CGAffineTransformIdentity;
+ }
+ self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
+ self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
+ 
+ } completion:^(BOOL finished) {
+ [self.rightMenuViewController endAppearanceTransition];
+ [self __addContentViewControllerMotionEffects];
+ 
+ if (!self.rightMenuVisible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didShowMenuViewController:)]) {
+ [self.delegate sideMenu:self didShowMenuViewController:self.rightMenuViewController];
+ }
+ 
+ self.visible = !(self.contentViewContainer.frame.size.width == self.view.bounds.size.width && self.contentViewContainer.frame.size.height == self.view.bounds.size.height && self.contentViewContainer.frame.origin.x == 0 && self.contentViewContainer.frame.origin.y == 0);
+ self.rightMenuVisible = self.visible;
+ [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+ 
+ }];
+ 
+ [self __statusBarNeedsAppearanceUpdate];
+ }
+ */
+
+- (void)__hideViewController:(UIViewController *)viewController
 {
-    if (!self.rightMenuViewController) {
-        return;
-    }
-    
-    self.leftMenuViewController.view.hidden = YES;
-    self.rightMenuViewController.view.hidden = NO;
-    [self.view.window endEditing:YES];
-    [self __addContentButton];
-    
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-    [UIView animateWithDuration:self.animationDuration animations:^{
-        if (self.scaleContentView) {
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
-        } else {
-            self.contentViewController.view.transform = CGAffineTransformIdentity;
-        }
-        
-        self.contentViewController.view.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? (-self.contentViewInLandscapeOffsetCenterX + CGRectGetHeight(self.view.frame)) : (-self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame))), self.contentViewController.view.center.y);
-        
-        if (self.scaleBackgroundImageView) {
-            self.backgroundImageView.transform = CGAffineTransformIdentity;
-        }
-        
-        if (self.scaleMenuViewController) {
-            self.menuView.transform = CGAffineTransformIdentity;
-        }
-        
-        if (self.gradientMenuViewController) {
-            self.menuView.alpha = 1.f;
-        }
-    } completion:^(BOOL finished) {
-        [self __addContentViewControllerMotionEffects];
-        
-        if (!self.rightMenuVisible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didShowMenuViewController:)]) {
-            [self.delegate sideMenu:self didShowMenuViewController:self.rightMenuViewController];
-        }
-        
-        /////zyj
-        self.visible = !(self.contentViewController.view.frame.size.width == self.view.bounds.size.width && self.contentViewController.view.frame.size.height == self.view.bounds.size.height && self.contentViewController.view.frame.origin.x == 0 && self.contentViewController.view.frame.origin.y == 0);
-        self.rightMenuVisible = self.visible;
-        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-    }];
-    
-    [self __statusBarNeedsAppearanceUpdate];
+    [viewController willMoveToParentViewController:nil];
+    [viewController.view removeFromSuperview];
+    [viewController removeFromParentViewController];
 }
 
-- (void)hideMenuViewController
+- (void)__hideMenuViewControllerAnimated:(BOOL)animated
 {
     BOOL rightMenuVisible = self.rightMenuVisible;
-    
-    [self.view.window endEditing:YES];
-    
+    UIViewController *visibleMenuViewController = rightMenuVisible ? self.rightMenuViewController : self.leftMenuViewController;
+    [visibleMenuViewController beginAppearanceTransition:NO animated:animated];
     if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willHideMenuViewController:)]) {
-        [self.delegate sideMenu:self willHideMenuViewController:rightMenuVisible ? self.rightMenuViewController:self.leftMenuViewController];
+        [self.delegate sideMenu:self willHideMenuViewController:rightMenuVisible ? self.rightMenuViewController : self.leftMenuViewController];
     }
     
     self.visible = NO;
     self.leftMenuVisible = NO;
     self.rightMenuVisible = NO;
-    [self.contentButton removeFromSuperview];                           // 记得移除按钮
+    [self.contentButton removeFromSuperview];
     
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents]; // 忽略所有事件
-    [UIView animateWithDuration:self.animationDuration animations:^{
-        self.contentViewController.view.transform = CGAffineTransformIdentity;
-        self.contentViewController.view.frame = self.view.bounds;
+    __typeof (self) __weak weakSelf = self;
+    void (^animationBlock)(void) = ^{
+        __typeof (weakSelf) __strong strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        strongSelf.contentViewContainer.transform = CGAffineTransformIdentity;
+        strongSelf.contentViewContainer.frame = strongSelf.view.bounds;
+        strongSelf.contentViewContainer.alpha = 1.0f;
         
-        if (self.scaleBackgroundImageView) {
-            self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
+        if (strongSelf.scaleMenuView) {
+            strongSelf.menuViewContainer.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
+        }
+        strongSelf.menuViewContainer.alpha = self.fadeMenuView ? 0.0f : 1.0f;
+        
+        if (strongSelf.scaleBackgroundImageView) {
+            strongSelf.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
+        }
+        if (strongSelf.parallaxEnabled) {
+            for (UIMotionEffect *effect in strongSelf.contentViewContainer.motionEffects) {
+                [strongSelf.contentViewContainer removeMotionEffect:effect];
+            }
+            
         }
         
-        if (self.scaleMenuViewController) {
-            self.menuView.transform = CGAffineTransformMakeScale(self.menuViewControllerScaleValue, self.menuViewControllerScaleValue);
+    };
+    void (^completionBlock)(void) = ^{
+        __typeof (weakSelf) __strong strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
         }
-        
-        if (self.gradientMenuViewController) {
-            self.menuView.alpha = 0;
+        [visibleMenuViewController endAppearanceTransition];
+        if (!strongSelf.visible && [strongSelf.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [strongSelf.delegate respondsToSelector:@selector(sideMenu:didHideMenuViewController:)]) {
+            [strongSelf.delegate sideMenu:strongSelf didHideMenuViewController:rightMenuVisible ? strongSelf.rightMenuViewController : strongSelf.leftMenuViewController];
         }
-        
-        if (self.parallaxEnabled) {
-            IF_IOS7_OR_GREATER(
-                               for (UIMotionEffect * effect in self.contentViewController.view.motionEffects) {
-                                   [self.contentViewController.view removeMotionEffect:effect];
-                               }
-                               
-                               );
-        }
-    } completion:^(BOOL finished) {
-        if (!self.visible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didHideMenuViewController:)]) {
-            [self.delegate sideMenu:self didHideMenuViewController:rightMenuVisible ? self.rightMenuViewController:self.leftMenuViewController];
-        }
-        
-        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-    }];
+    };
+    
+    if (animated) {
+        [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+        [UIView animateWithDuration:self.animationDuration animations:^{
+            animationBlock();
+        } completion:^(BOOL finished) {
+            [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+            completionBlock();
+        }];
+    } else {
+        animationBlock();
+        completionBlock();
+    }
     [self __statusBarNeedsAppearanceUpdate];
 }
 
 - (void)__addContentButton
 {
-    if (self.contentButton.superview) {
+    if (self.contentButton.superview)
         return;
-    }
     
-    self.contentButton.autoresizingMask = UIViewAutoresizingNone;
-    self.contentButton.frame = self.contentViewController.view.bounds;
+    //    self.contentButton.autoresizingMask = UIViewAutoresizingNone;
+    self.contentButton.frame = self.contentViewContainer.bounds;
     self.contentButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.contentViewController.view addSubview:self.contentButton];
+    [self.contentViewContainer addSubview:self.contentButton];
 }
 
-#pragma mark - animation
-
-- (void)flashMenu
+- (void)__statusBarNeedsAppearanceUpdate
 {
-    // Animate to deappear
-    __typeof(&*self) __weak weakSelf = self;
-    self.menuView.transform = CGAffineTransformScale(self.menuView.transform, 0.9, 0.9);
-    [UIView animateWithDuration:0.5 animations:^{
-        weakSelf.menuView.transform = CGAffineTransformIdentity;
-    }];
-    [UIView animateWithDuration:0.6 animations:^{
-        weakSelf.menuView.alpha = 0;
-    }];
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        [UIView animateWithDuration:0.3f animations:^{
+            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+        }];
+    }
+}
+
+- (void)__updateContentViewShadow
+{
+    if (self.contentViewShadowEnabled) {
+        CALayer *layer = self.contentViewContainer.layer;
+        UIBezierPath *path = [UIBezierPath bezierPathWithRect:layer.bounds];
+        layer.shadowPath = path.CGPath;
+        layer.shadowColor = self.contentViewShadowColor.CGColor;
+        layer.shadowOffset = self.contentViewShadowOffset;
+        layer.shadowOpacity = self.contentViewShadowOpacity;
+        layer.shadowRadius = self.contentViewShadowRadius;
+    }
+}
+
+- (void)__resetContentViewScale
+{
     
-    [UIView animateWithDuration:0.6 animations:^{
-        weakSelf.menuView.alpha = 1;
-    }];
+    CGAffineTransform t = self.contentViewContainer.transform;
+    CGFloat scale = sqrt(t.a * t.a + t.c * t.c);
+    CGRect frame = self.contentViewContainer.frame;
+    self.contentViewContainer.transform = CGAffineTransformIdentity;
+    self.contentViewContainer.transform = CGAffineTransformMakeScale(scale, scale);
+    self.contentViewContainer.frame = frame;
+}
+
+#pragma mark - view methods (Private)
+-(CGFloat)__viewGetWidth{
+    return (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1)?CGRectGetWidth(self.view.frame):CGRectGetHeight(self.view.frame);
 }
 
 #pragma mark -
@@ -458,48 +583,36 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 - (void)__addMenuViewControllerMotionEffects
 {
-    if (self.parallaxEnabled) {
-        IF_IOS7_OR_GREATER(
-                           for (UIMotionEffect *effect in self.menuView.motionEffects) {
-                               [self.menuView removeMotionEffect:effect];
-                           }
-                           
-                           UIInterpolatingMotionEffect *interpolationHorizontal = [[UIInterpolatingMotionEffect alloc]initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-                           interpolationHorizontal.minimumRelativeValue = @(self.parallaxMenuMinimumRelativeValue);
-                           interpolationHorizontal.maximumRelativeValue = @(self.parallaxMenuMaximumRelativeValue);
-                           
-                           UIInterpolatingMotionEffect *interpolationVertical = [[UIInterpolatingMotionEffect alloc]initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-                           interpolationVertical.minimumRelativeValue = @(self.parallaxMenuMinimumRelativeValue);
-                           interpolationVertical.maximumRelativeValue = @(self.parallaxMenuMaximumRelativeValue);
-                           
-                           [self.menuView addMotionEffect:interpolationHorizontal];
-                           [self.menuView addMotionEffect:interpolationVertical];
-                           );
-    }
+    
+    [self __addMotionEffectsTo:self.menuViewContainer minimumRelativeValue:self.parallaxMenuMinimumRelativeValue maximumRelativeValue:self.parallaxMenuMaximumRelativeValue];
 }
 
 - (void)__addContentViewControllerMotionEffects
 {
+    [self __addMotionEffectsTo:self.contentViewContainer minimumRelativeValue:self.parallaxContentMinimumRelativeValue maximumRelativeValue:self.parallaxContentMaximumRelativeValue];
+}
+
+- (void)__addMotionEffectsTo:(UIView *)view minimumRelativeValue:(CGFloat)minimumRelativeValue maximumRelativeValue:(CGFloat)maximumRelativeValue{
     if (self.parallaxEnabled) {
-        IF_IOS7_OR_GREATER(
-                           for (UIMotionEffect *effect in self.contentViewController.view.motionEffects) {
-                               [self.contentViewController.view removeMotionEffect:effect];
-                           }
-                           
-                           [UIView animateWithDuration:0.2 animations:^{
+        
+        for (UIMotionEffect *effect in view.motionEffects) {
+            [view removeMotionEffect:effect];
+        }
+        [UIView animateWithDuration:0.2 animations:^{
             UIInterpolatingMotionEffect *interpolationHorizontal = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.x" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
-            interpolationHorizontal.minimumRelativeValue = @(self.parallaxContentMinimumRelativeValue);
-            interpolationHorizontal.maximumRelativeValue = @(self.parallaxContentMaximumRelativeValue);
+            interpolationHorizontal.minimumRelativeValue = @(minimumRelativeValue);
+            interpolationHorizontal.maximumRelativeValue = @(maximumRelativeValue);
             
             UIInterpolatingMotionEffect *interpolationVertical = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
-            interpolationVertical.minimumRelativeValue = @(self.parallaxContentMinimumRelativeValue);
-            interpolationVertical.maximumRelativeValue = @(self.parallaxContentMaximumRelativeValue);
+            interpolationVertical.minimumRelativeValue = @(minimumRelativeValue);
+            interpolationVertical.maximumRelativeValue = @(maximumRelativeValue);
             
-            [self.contentViewController.view addMotionEffect:interpolationHorizontal];
-            [self.contentViewController.view addMotionEffect:interpolationVertical];
+            [view addMotionEffect:interpolationHorizontal];
+            [view addMotionEffect:interpolationVertical];
         }];
-                           );
+        
     }
+    
 }
 
 #pragma mark -
@@ -507,32 +620,24 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    IF_IOS7_OR_GREATER(
-                       if (self.interactivePopGestureRecognizerEnabled && [self.contentViewController isKindOfClass:[UINavigationController class]]) {
-                           UINavigationController *navigationController = (UINavigationController *)self.contentViewController;
-                           
-                           if ((navigationController.viewControllers.count > 1) && navigationController.interactivePopGestureRecognizer.enabled) {
-                               return NO;
-                           }
-                       }
-                       
-                       );
+    /*
+     IF_IOS7_OR_GREATER(
+     if (self.interactivePopGestureRecognizerEnabled && [self.contentViewController isKindOfClass:[UINavigationController class]]) {
+     UINavigationController *navigationController = (UINavigationController *)self.contentViewController;
+     if (navigationController.viewControllers.count > 1 && navigationController.interactivePopGestureRecognizer.enabled) {
+     return NO;
+     }
+     }
+     );
+     */
     
-    if (self.onlySlideFromEdge && [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && !self.visible) {
-        //        if (recognizer.state == UIGestureRecognizerStateBegan) {
-        CGPoint startPoint = [touch locationInView:gestureRecognizer.view];
-        
-        //            CGPoint startPoint = [recognizer locationInView:self.contentViewController.view];
-        BOOL isSideFromEdge;
-        
-        if ((self.leftMenuViewController && (startPoint.x < self.slideEdgeValue)) || (self.rightMenuViewController && (startPoint.x > self.view.frame.size.width - 20.0))) {
-            isSideFromEdge = YES;
+    if (self.panFromEdge && [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && !self.visible) {
+        CGPoint point = [touch locationInView:gestureRecognizer.view];
+        if (point.x < 20.0 || point.x > self.view.frame.size.width - 20.0) {
+            return YES;
         } else {
-            isSideFromEdge = NO;
+            return NO;
         }
-        
-        //        }
-        return isSideFromEdge;
     }
     
     return YES;
@@ -540,31 +645,11 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 
 #pragma mark -
 #pragma mark Pan gesture recognizer (Private)
+
 - (void)panGestureRecognized:(UIPanGestureRecognizer *)recognizer
 {
-    /**
-     *   //    CGPoint startPoint = [recognizer locationInView:self.view];
-     *   //    NSLog(@"%@",NSStringFromCGPoint(startPoint));
-     *   if (self.onlySlideFromEdge &&!self.visible) {
-     *    if (recognizer.state == UIGestureRecognizerStateBegan) {
-     *        CGPoint startPoint = [recognizer locationInView:self.contentViewController.view];
-     *        if (startPoint.x < self.slideEdgeValue) {
-     *            self.isSideFromEdge = YES;
-     *        }else{
-     *            self.isSideFromEdge = NO;
-     *        }
-     *    }
-     *    if (!self.isSideFromEdge) {
-     *        return;
-     *    }
-     *   }
-     *
-     *
-     **/
-    
-    if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didRecognizePanGesture:)]) {
+    if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didRecognizePanGesture:)])
         [self.delegate sideMenu:self didRecognizePanGesture:recognizer];
-    }
     
     if (!self.panGestureEnabled) {
         return;
@@ -573,42 +658,35 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     CGPoint point = [recognizer translationInView:self.view];
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-        self.originalPoint = CGPointMake(self.contentViewController.view.center.x - CGRectGetWidth(self.contentViewController.view.bounds) / 2.0,
-                                         self.contentViewController.view.center.y - CGRectGetHeight(self.contentViewController.view.bounds) / 2.0);                          // self.contentViewController.view.frame.origin;
-        self.menuView.transform = CGAffineTransformIdentity;
+        [self __updateContentViewShadow];
+        
+        self.originalPoint = CGPointMake(self.contentViewContainer.center.x - CGRectGetWidth(self.contentViewContainer.bounds) / 2.0,
+                                         self.contentViewContainer.center.y - CGRectGetHeight(self.contentViewContainer.bounds) / 2.0);
+        self.menuViewContainer.transform = CGAffineTransformIdentity;
+        self.menuViewContainer.frame = self.view.bounds;
         
         if (self.scaleBackgroundImageView) {
             self.backgroundImageView.transform = CGAffineTransformIdentity;
             self.backgroundImageView.frame = self.view.bounds;
         }
-        
-        if (self.scaleContentView) {
-            self.backgroundImageView.transform = CGAffineTransformIdentity;
-            self.menuView.frame = self.view.bounds;
-        }
-        
         [self __addContentButton];
         [self.view.window endEditing:YES];
         self.didNotifyDelegate = NO;
     }
     
     if (recognizer.state == UIGestureRecognizerStateChanged) {
-        //        CGFloat delta = self.visible ? (point.x + self.originalPoint.x) / self.originalPoint.x : point.x / self.view.frame.size.width;
         CGFloat delta = 0;
-        
         if (self.visible) {
             delta = self.originalPoint.x != 0 ? (point.x + self.originalPoint.x) / self.originalPoint.x : 0;
         } else {
             delta = point.x / self.view.frame.size.width;
         }
-        
         delta = MIN(fabs(delta), 1.6);
         
-        //        CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
         CGFloat contentViewScale = self.scaleContentView ? 1 - ((1 - self.contentViewScaleValue) * delta) : 1;
         
         CGFloat backgroundViewScale = self.backgroundImageViewScaleValue - (0.7f * delta);
-        CGFloat menuViewScale = self.menuViewControllerScaleValue - (0.5f * delta);
+        CGFloat menuViewScale = 1.5f - (0.5f * delta);
         
         if (!self.bouncesHorizontally) {
             contentViewScale = MAX(contentViewScale, self.contentViewScaleValue);
@@ -616,32 +694,28 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
             menuViewScale = MAX(menuViewScale, 1.0);
         }
         
-        if (self.gradientMenuViewController) {
-            self.menuView.alpha = delta;
-        }
+        self.menuViewContainer.alpha = self.fadeMenuView ? delta: 1.0f;
+        self.contentViewContainer.alpha = 1 - (1 - self.contentViewFadeOutAlpha) * delta;
         
         if (self.scaleBackgroundImageView) {
             self.backgroundImageView.transform = CGAffineTransformMakeScale(backgroundViewScale, backgroundViewScale);
-        }
-        
-        if (self.scaleMenuViewController) {
-            self.menuView.transform = CGAffineTransformMakeScale(menuViewScale, menuViewScale);
-        }
-        
-        if (self.scaleBackgroundImageView) {
             if (backgroundViewScale < 1) {
                 self.backgroundImageView.transform = CGAffineTransformIdentity;
             }
         }
         
+        if (self.scaleMenuView) {
+            self.menuViewContainer.transform = CGAffineTransformMakeScale(menuViewScale, menuViewScale);
+        }
+        
+        
+        
         if (!self.bouncesHorizontally && self.visible) {
-            if (self.contentViewController.view.frame.origin.x > self.contentViewController.view.frame.size.width / 2.0) {
+            if (self.contentViewContainer.frame.origin.x > self.contentViewContainer.frame.size.width / 2.0)
                 point.x = MIN(0.0, point.x);
-            }
             
-            if (self.contentViewController.view.frame.origin.x < -(self.contentViewController.view.frame.size.width / 2.0)) {
+            if (self.contentViewContainer.frame.origin.x < -(self.contentViewContainer.frame.size.width / 2.0))
                 point.x = MAX(0.0, point.x);
-            }
         }
         
         // Limit size
@@ -651,7 +725,6 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         } else {
             point.x = MIN(point.x, [UIScreen mainScreen].bounds.size.height);
         }
-        
         [recognizer setTranslation:point inView:self.view];
         
         if (!self.didNotifyDelegate) {
@@ -660,36 +733,34 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
                     [self.delegate sideMenu:self willShowMenuViewController:self.leftMenuViewController];
                 }
             }
-            
             if (point.x < 0) {
                 if (!self.visible && [self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willShowMenuViewController:)]) {
                     [self.delegate sideMenu:self willShowMenuViewController:self.rightMenuViewController];
                 }
             }
-            
             self.didNotifyDelegate = YES;
         }
         
         if (contentViewScale > 1) {
             CGFloat oppositeScale = (1 - (contentViewScale - 1));
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(oppositeScale, oppositeScale);
-            self.contentViewController.view.transform = CGAffineTransformTranslate(self.contentViewController.view.transform, point.x, 0);
+            self.contentViewContainer.transform = CGAffineTransformMakeScale(oppositeScale, oppositeScale);
+            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, 0);
         } else {
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(contentViewScale, contentViewScale);
-            self.contentViewController.view.transform = CGAffineTransformTranslate(self.contentViewController.view.transform, point.x, 0);
+            self.contentViewContainer.transform = CGAffineTransformMakeScale(contentViewScale, contentViewScale);
+            self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, 0);
         }
         
-        self.leftMenuViewController.view.hidden = self.contentViewController.view.frame.origin.x < 0;
-        self.rightMenuViewController.view.hidden = self.contentViewController.view.frame.origin.x > 0;
+        self.leftMenuViewController.view.hidden = self.contentViewContainer.frame.origin.x < 0;
+        self.rightMenuViewController.view.hidden = self.contentViewContainer.frame.origin.x > 0;
         
-        if (!self.leftMenuViewController && (self.contentViewController.view.frame.origin.x > 0)) {
-            self.contentViewController.view.transform = CGAffineTransformIdentity;
-            self.contentViewController.view.frame = self.view.bounds;
+        if (!self.leftMenuViewController && self.contentViewContainer.frame.origin.x > 0) {
+            self.contentViewContainer.transform = CGAffineTransformIdentity;
+            self.contentViewContainer.frame = self.view.bounds;
             self.visible = NO;
             self.leftMenuVisible = NO;
-        } else if (!self.rightMenuViewController && (self.contentViewController.view.frame.origin.x < 0)) {
-            self.contentViewController.view.transform = CGAffineTransformIdentity;
-            self.contentViewController.view.frame = self.view.bounds;
+        } else  if (!self.rightMenuViewController && self.contentViewContainer.frame.origin.x < 0) {
+            self.contentViewContainer.transform = CGAffineTransformIdentity;
+            self.contentViewContainer.frame = self.view.bounds;
             self.visible = NO;
             self.rightMenuVisible = NO;
         }
@@ -699,25 +770,28 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         self.didNotifyDelegate = NO;
-        
-        if ((self.panMinimumOpenThreshold > 0) && (
-                                                   ((self.contentViewController.view.frame.origin.x < 0) && (self.contentViewController.view.frame.origin.x > -((NSInteger)self.panMinimumOpenThreshold))) ||
-                                                   ((self.contentViewController.view.frame.origin.x > 0) && (self.contentViewController.view.frame.origin.x < self.panMinimumOpenThreshold)))
+        if (self.panMinimumOpenThreshold > 0 && (
+                                                 (self.contentViewContainer.frame.origin.x < 0 && self.contentViewContainer.frame.origin.x > -((NSInteger)self.panMinimumOpenThreshold)) ||
+                                                 (self.contentViewContainer.frame.origin.x > 0 && self.contentViewContainer.frame.origin.x < self.panMinimumOpenThreshold))
             ) {
             [self hideMenuViewController];
-        } else {
-            if ([recognizer velocityInView:self.view].x > 0) { // 返回速度矢量
-                if (self.contentViewController.view.frame.origin.x < 0) {
+        }
+        else if (self.contentViewContainer.frame.origin.x == 0) {
+            [self __hideMenuViewControllerAnimated:NO];
+        }
+        else {
+            if ([recognizer velocityInView:self.view].x > 0) {
+                if (self.contentViewContainer.frame.origin.x < 0) {
                     [self hideMenuViewController];
                 } else {
                     if (self.leftMenuViewController) {
-                        [self __showLeftMenuViewController];
+                        [self __showMenuViewController:self.leftMenuViewController];
                     }
                 }
             } else {
-                if (self.contentViewController.view.frame.origin.x < 20) {
+                if (self.contentViewContainer.frame.origin.x < 20) {
                     if (self.rightMenuViewController) {
-                        [self __showRightMenuViewController];
+                        [self __showMenuViewController:self.rightMenuViewController];
                     }
                 } else {
                     [self hideMenuViewController];
@@ -733,10 +807,8 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 - (void)setBackgroundImage:(UIImage *)backgroundImage
 {
     _backgroundImage = backgroundImage;
-    
-    if (self.backgroundImageView) {
+    if (self.backgroundImageView)
         self.backgroundImageView.image = backgroundImage;
-    }
 }
 
 - (void)setContentViewController:(UIViewController *)contentViewController
@@ -745,35 +817,18 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         _contentViewController = contentViewController;
         return;
     }
-    
-    CGRect              frame = _contentViewController.view.frame;
-    CGAffineTransform   transform = _contentViewController.view.transform;
-    [self re_hideController:_contentViewController];
+    [self __hideViewController:_contentViewController];
     _contentViewController = contentViewController;
-    [self re_displayController:contentViewController frame:self.view.frame];
-    contentViewController.view.transform = transform;
-    contentViewController.view.frame = frame;
     
-    [self __refreshContentViewShadow];
+    [self addChildViewController:self.contentViewController];
+    self.contentViewController.view.frame = self.view.bounds;
+    [self.contentViewContainer addSubview:self.contentViewController.view];
+    [self.contentViewController didMoveToParentViewController:self];
+    
+    [self __updateContentViewShadow];
     
     if (self.visible) {
         [self __addContentViewControllerMotionEffects];
-    }
-}
-
-- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated
-{
-    if (!animated) {
-        [self setContentViewController:contentViewController];
-    } else {
-        contentViewController.view.alpha = 0;
-        [self.contentViewController.view addSubview:contentViewController.view];
-        [UIView animateWithDuration:self.animationDuration animations:^{
-            contentViewController.view.alpha = 1;
-        } completion:^(BOOL finished) {
-            [contentViewController.view removeFromSuperview];
-            [self setContentViewController:contentViewController];
-        }];
     }
 }
 
@@ -783,18 +838,17 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         _leftMenuViewController = leftMenuViewController;
         return;
     }
-    
-    [self re_hideController:_leftMenuViewController];
+    [self __hideViewController:_leftMenuViewController];
     _leftMenuViewController = leftMenuViewController;
     
     [self addChildViewController:self.leftMenuViewController];
     self.leftMenuViewController.view.frame = self.view.bounds;
     self.leftMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.menuView addSubview:self.leftMenuViewController.view];
+    [self.menuViewContainer addSubview:self.leftMenuViewController.view];
     [self.leftMenuViewController didMoveToParentViewController:self];
     
     [self __addMenuViewControllerMotionEffects];
-    [self.view bringSubviewToFront:self.contentViewController.view];
+    [self.view bringSubviewToFront:self.contentViewContainer];
 }
 
 - (void)setRightMenuViewController:(UIViewController *)rightMenuViewController
@@ -803,22 +857,21 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
         _rightMenuViewController = rightMenuViewController;
         return;
     }
-    
-    [self re_hideController:_rightMenuViewController];
+    [self __hideViewController:_rightMenuViewController];
     _rightMenuViewController = rightMenuViewController;
     
     [self addChildViewController:self.rightMenuViewController];
     self.rightMenuViewController.view.frame = self.view.bounds;
     self.rightMenuViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.menuView addSubview:self.rightMenuViewController.view];
+    [self.menuViewContainer addSubview:self.rightMenuViewController.view];
     [self.rightMenuViewController didMoveToParentViewController:self];
     
     [self __addMenuViewControllerMotionEffects];
-    [self.view bringSubviewToFront:self.contentViewController.view];
+    [self.view bringSubviewToFront:self.contentViewContainer];
 }
 
 #pragma mark -
-#pragma mark Rotation handler
+#pragma mark View Controller Rotation handler
 
 - (BOOL)shouldAutorotate
 {
@@ -828,55 +881,46 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     if (self.visible) {
-        self.menuView.bounds = self.view.bounds;
-        self.contentViewController.view.transform = CGAffineTransformIdentity;
-        self.contentViewController.view.frame = self.view.bounds;
+        self.menuViewContainer.bounds = self.view.bounds;
+        self.contentViewContainer.transform = CGAffineTransformIdentity;
+        self.contentViewContainer.frame = self.view.bounds;
         
         if (self.scaleContentView) {
-            self.contentViewController.view.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+            self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
         } else {
-            self.contentViewController.view.transform = CGAffineTransformIdentity;
+            self.contentViewContainer.transform = CGAffineTransformIdentity;
         }
         
         CGPoint center;
-        
         if (self.leftMenuVisible) {
-            center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? self.contentViewInLandscapeOffsetCenterX : self.contentViewInPortraitOffsetCenterX), self.contentViewController.view.center.y);
+            center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX + [self __viewGetWidth] : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+            
         } else {
-            center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? (-self.contentViewInLandscapeOffsetCenterX + CGRectGetHeight(self.view.frame)) : (-self.contentViewInPortraitOffsetCenterX) + CGRectGetWidth(self.view.frame)), self.contentViewController.view.center.y);
+            center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
         }
         
-        self.contentViewController.view.center = center;
+        self.contentViewContainer.center = center;
     }
+    
+    [self __updateContentViewShadow];
 }
+
+
 
 #pragma mark -
-#pragma mark Status bar appearance management
-
-- (void)__statusBarNeedsAppearanceUpdate
-{
-    // ios7刷新状态栏
-    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-        [UIView animateWithDuration:0.3f animations:^{
-            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
-        }];
-    }
-}
+#pragma mark Status Bar Appearance Management
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     UIStatusBarStyle statusBarStyle = UIStatusBarStyleDefault;
     
-    IF_IOS7_OR_GREATER(
-                       statusBarStyle = self.visible ? (self.leftMenuVisible ? self.leftMenuViewController.preferredStatusBarStyle : self.rightMenuViewController.preferredStatusBarStyle) : self.contentViewController.preferredStatusBarStyle;
-                       
-                       if (self.contentViewController.view.frame.origin.y > 10) {
-                           statusBarStyle = self.leftMenuVisible ? self.leftMenuViewController.preferredStatusBarStyle : self.rightMenuViewController.preferredStatusBarStyle;
-                       } else {
-                           statusBarStyle = self.contentViewController.preferredStatusBarStyle;
-                       }
-                       
-                       );
+    //    statusBarStyle = self.visible ? self.menuPreferredStatusBarStyle : self.contentViewController.preferredStatusBarStyle;
+    if (self.contentViewContainer.frame.origin.y > 10) {
+        statusBarStyle = self.menuPreferredStatusBarStyle;
+    } else {
+        statusBarStyle = self.contentViewController.preferredStatusBarStyle;
+    }
+    
     return statusBarStyle;
 }
 
@@ -884,60 +928,45 @@ BOOL EZSideMenuUIKitIsFlatMode() // 是否支持扁平
 {
     BOOL statusBarHidden = NO;
     
-    IF_IOS7_OR_GREATER(
-                       statusBarHidden = self.visible ? (self.leftMenuVisible ? self.leftMenuViewController.prefersStatusBarHidden : self.rightMenuViewController.prefersStatusBarHidden) : self.contentViewController.prefersStatusBarHidden;
-                       
-                       if (self.contentViewController.view.frame.origin.y > 10) {
-                           statusBarHidden = (self.leftMenuVisible ? self.leftMenuViewController.prefersStatusBarHidden : self.rightMenuViewController.prefersStatusBarHidden);
-                       } else {
-                           statusBarHidden = self.contentViewController.prefersStatusBarHidden;
-                       }
-                       
-                       );
+    //    statusBarHidden = self.visible ? self.menuPrefersStatusBarHidden : self.contentViewController.prefersStatusBarHidden;
+    if (self.contentViewContainer.frame.origin.y > 10) {
+        statusBarHidden = self.menuPrefersStatusBarHidden;
+    } else {
+        statusBarHidden = self.contentViewController.prefersStatusBarHidden;
+    }
+    
     return statusBarHidden;
 }
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
 {
     UIStatusBarAnimation statusBarAnimation = UIStatusBarAnimationNone;
+    statusBarAnimation = self.visible ? self.leftMenuViewController.preferredStatusBarUpdateAnimation : self.contentViewController.preferredStatusBarUpdateAnimation;
+    if (self.contentViewContainer.frame.origin.y > 10) {
+        statusBarAnimation = (self.leftMenuVisible ? self.leftMenuViewController.preferredStatusBarUpdateAnimation : self.rightMenuViewController.preferredStatusBarUpdateAnimation);
+    } else {
+        statusBarAnimation = self.contentViewController.preferredStatusBarUpdateAnimation;
+    }
     
-    IF_IOS7_OR_GREATER(
-                       statusBarAnimation = self.visible ? (self.leftMenuVisible ? self.leftMenuViewController.preferredStatusBarUpdateAnimation : self.rightMenuViewController.preferredStatusBarUpdateAnimation) : self.contentViewController.preferredStatusBarUpdateAnimation;
-                       
-                       if (self.contentViewController.view.frame.origin.y > 10) {
-                           statusBarAnimation = (self.leftMenuVisible ? self.leftMenuViewController.preferredStatusBarUpdateAnimation : self.rightMenuViewController.preferredStatusBarUpdateAnimation);
-                       } else {
-                           statusBarAnimation = self.contentViewController.preferredStatusBarUpdateAnimation;
-                       }
-                       
-                       );
     return statusBarAnimation;
 }
 
-#pragma mark -
-#pragma mark private
-- (void)__displayController:(UIViewController *)controller
-{
-    if (controller) {
-        [self addChildViewController:controller];
-        controller.view.frame = self.view.bounds;
-        controller.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [self.menuView addSubview:controller.view];
-        [controller didMoveToParentViewController:self];
-    }
-}
-
-- (void)__refreshContentViewShadow
-{
-    if (self.contentViewShadowEnabled) {
-        CALayer         *layer = self.contentViewController.view.layer;
-        UIBezierPath    *path = [UIBezierPath bezierPathWithRect:layer.bounds];
-        layer.shadowPath = path.CGPath;
-        layer.shadowColor = self.contentViewShadowColor.CGColor;
-        layer.shadowOffset = self.contentViewShadowOffset;
-        layer.shadowOpacity = self.contentViewShadowOpacity;
-        layer.shadowRadius = self.contentViewShadowRadius;
-    }
-}
-
 @end
+
+@implementation EZSideMenu (Animation)
+- (void)flashMenu
+{
+    // Animate to deappear
+    __typeof(&*self) __weak weakSelf = self;
+    self.menuViewContainer.transform = CGAffineTransformScale(self.menuViewContainer.transform, 0.9, 0.9);
+    [UIView animateWithDuration:0.5 animations:^{
+        weakSelf.menuViewContainer.transform = CGAffineTransformIdentity;
+    }];
+    [UIView animateWithDuration:0.6 animations:^{
+        weakSelf.menuViewContainer.alpha = 0;
+    }];
+    
+    [UIView animateWithDuration:0.6 animations:^{
+        weakSelf.menuViewContainer.alpha = 1;
+    }];
+}@end
