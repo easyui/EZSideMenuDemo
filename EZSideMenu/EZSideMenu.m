@@ -575,7 +575,11 @@
 
 #pragma mark - view methods (Private)
 -(CGFloat)__viewGetWidth{
-    return (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1)?CGRectGetWidth(self.view.frame):CGRectGetHeight(self.view.frame);
+    if ((NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1)) {
+        return  CGRectGetWidth(self.view.frame);
+    }else{
+        return UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)?CGRectGetHeight(self.view.frame):CGRectGetWidth(self.view.frame);
+    }
 }
 
 #pragma mark -
@@ -876,6 +880,10 @@
 - (BOOL)shouldAutorotate
 {
     return self.contentViewController.shouldAutorotate;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+    return self.contentViewController.supportedInterfaceOrientations;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
