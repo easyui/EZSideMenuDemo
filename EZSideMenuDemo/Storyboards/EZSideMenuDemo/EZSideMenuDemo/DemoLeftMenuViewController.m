@@ -51,6 +51,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    UIStoryboard *storyboard = self.storyboard;
+    if (!storyboard){
+        storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    }
+    
     if (self.menuDic.count > 6) {
         switch (indexPath.row) {
             case 8:
@@ -65,13 +71,13 @@
     }else{
         switch (indexPath.row) {
             case 0:
-                [self.sideMenuViewController setContentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"DemoParamsUINavigationControllerStoreboardID"]
+                [self.sideMenuViewController setContentViewController:[storyboard instantiateViewControllerWithIdentifier:@"DemoParamsUINavigationControllerStoreboardID"]
                                                              animated:YES];
                 [self.sideMenuViewController hideMenuViewController];
                 break;
                 
             case 1:
-                [self.sideMenuViewController setContentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"DemoVideosUINavigationControllerStoreboardID"]
+                [self.sideMenuViewController setContentViewController:[storyboard instantiateViewControllerWithIdentifier:@"DemoVideosUINavigationControllerStoreboardID"]
                                                              animated:YES];
                 [self.sideMenuViewController hideMenuViewController];
                 break;
