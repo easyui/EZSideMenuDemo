@@ -913,7 +913,6 @@
     [self __updateContentViewShadow];
 }
 
-
 #pragma mark -
 #pragma mark Status Bar Appearance Management
 
