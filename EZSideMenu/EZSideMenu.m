@@ -930,6 +930,7 @@
     return statusBarStyle;
 }
 
+
 - (BOOL)prefersStatusBarHidden
 {
     BOOL statusBarHidden = NO;
