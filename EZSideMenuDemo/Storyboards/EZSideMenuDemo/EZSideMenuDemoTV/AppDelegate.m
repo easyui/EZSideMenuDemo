@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  EZSideMenuDemoCode
+//  EZSideMenuDemoTV
 //
 //  Created by yangjun zhu on 2016/9/27.
 //  Copyright © 2016年 Cactus. All rights reserved.
@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "DemoLeftMenuViewController.h"
-#import "DemoRightMenuViewController.h"
 #import "DemoParamsViewController.h"
 
 @interface AppDelegate ()
@@ -21,57 +20,44 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    UIStoryboard * mainsb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    UINavigationController *navigationController = [mainsb instantiateViewControllerWithIdentifier:@"DemoParamsUINavigationControllerStoreboardID"];
-    DemoLeftMenuViewController *leftMenuViewController = [mainsb instantiateViewControllerWithIdentifier:@"DemoLeftMenuViewControllerStoreboardID"];
-    DemoRightMenuViewController *rightMenuViewController = [mainsb instantiateViewControllerWithIdentifier:@"DemoRightMenuViewControllerStoreboardID"];
+    DemoParamsViewController *paramsViewController = [[DemoParamsViewController alloc] initWithNibName:@"DemoParamsViewController" bundle:nil];
+
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:paramsViewController];
+    DemoLeftMenuViewController *leftMenuViewController = [[DemoLeftMenuViewController alloc] initWithNibName:@"DemoLeftMenuViewController" bundle:nil];
     
     EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController
                                                                     leftMenuViewController:leftMenuViewController
-                                                                   rightMenuViewController:rightMenuViewController];
-//    sideMenuViewController.backgroundImage = [UIImage imageNamed:@"Stars"];
-//    sideMenuViewController.menuPreferredStatusBarStyle = 1; // UIStatusBarStyleLightContent
-//    sideMenuViewController.delegate = self;
-//    sideMenuViewController.contentViewShadowColor = [UIColor blackColor];
-//    sideMenuViewController.contentViewShadowOffset = CGSizeMake(0, 0);
-//    sideMenuViewController.contentViewShadowOpacity = 0.6;
-//    sideMenuViewController.contentViewShadowRadius = 12;
-//    sideMenuViewController.contentViewShadowEnabled = YES;
-    
-    
-    
-    
-    
-    
-    
-    sideMenuViewController.menuPreferredStatusBarStyle = UIStatusBarStyleLightContent;
+                                                                   rightMenuViewController:nil];
+//    sideMenuViewController.menuPreferredStatusBarStyle = UIStatusBarStyleLightContent;
     sideMenuViewController.contentViewShadowColor = [UIColor blackColor];
     sideMenuViewController.contentViewShadowOffset = CGSizeMake(0, 0);
     sideMenuViewController.contentViewShadowOpacity = 0.6;
     sideMenuViewController.contentViewShadowRadius = 12;
-    sideMenuViewController.contentViewShadowEnabled = YES;
+    sideMenuViewController.contentViewShadowEnabled = NO;
     sideMenuViewController.scaleMenuView = NO;
     sideMenuViewController.scaleContentView = NO;
+//    sideMenuViewController.panGestureEnabled = NO;
     sideMenuViewController.parallaxEnabled = NO;
-    sideMenuViewController.contentViewShadowEnabled = NO;
-
+    sideMenuViewController.bouncesHorizontally = NO;
 
     
-
+    
     sideMenuViewController.backgroundImage = [UIImage imageNamed:@"menu_bg"];
     sideMenuViewController.delegate = self;
-
+    
     self.window.rootViewController = sideMenuViewController;
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+//    [sideMenuViewController presentLeftMenuViewController];
+
     return YES;
 }
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
 

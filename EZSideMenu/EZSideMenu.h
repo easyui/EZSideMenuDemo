@@ -46,7 +46,9 @@
 @property (assign, readwrite, nonatomic) NSTimeInterval animationDuration;//菜单动画时间，0.35f
 #warning 可以实现左右两个图
 @property (strong, readwrite, nonatomic) UIImage *backgroundImage;//菜单背景图片
+#if TARGET_OS_IOS
 @property (assign, readwrite, nonatomic) UIStatusBarStyle menuPreferredStatusBarStyle;
+#endif
 @property (assign, readwrite, nonatomic) IBInspectable BOOL menuPrefersStatusBarHidden;
 
 //主内容偏移量
@@ -54,11 +56,10 @@
 @property (assign, readwrite, nonatomic) IBInspectable CGFloat contentViewInPortraitOffsetCenterX;
 
 //手势
-@property (assign, readwrite, nonatomic) BOOL panGestureEnabled;//滑动打开
+@property (assign, readwrite, nonatomic) BOOL panGestureEnabled;//滑动打开  // TVOS不提供手势
 @property (assign, readwrite, nonatomic) BOOL panFromEdge;//边缘滑动打开
 @property (assign, readwrite, nonatomic) NSUInteger panMinimumOpenThreshold;//滑动至少多少才算打开
-@property (assign, readwrite, nonatomic) IBInspectable BOOL interactivePopGestureRecognizerEnabled;
-#warning interactivePopGestureRecognizerEnabled 可以去掉
+
 @property (assign, readwrite, nonatomic) IBInspectable BOOL bouncesHorizontally;//打开菜单后是否还可以像后滑动
 
 

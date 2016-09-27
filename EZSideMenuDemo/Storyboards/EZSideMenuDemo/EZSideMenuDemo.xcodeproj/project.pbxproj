@@ -41,6 +41,19 @@
 		99AF0C891D9A4FD80043C111 /* EZSideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 9979DF651B8C17D000AA487D /* EZSideMenu.m */; };
 		99AF0C8A1D9A51050043C111 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9979DF471B8C163400AA487D /* Images.xcassets */; };
 		99AF0C8B1D9A510F0043C111 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9979DF441B8C163400AA487D /* Main.storyboard */; };
+		99AF0CDA1D9A5D290043C111 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CD91D9A5D290043C111 /* main.m */; };
+		99AF0CDD1D9A5D290043C111 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CDC1D9A5D290043C111 /* AppDelegate.m */; };
+		99AF0CE01D9A5D290043C111 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CDF1D9A5D290043C111 /* ViewController.m */; };
+		99AF0CE51D9A5D290043C111 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AF0CE41D9A5D290043C111 /* Assets.xcassets */; };
+		99AF0CEC1D9A5E990043C111 /* DemoBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CEB1D9A5E990043C111 /* DemoBaseViewController.m */; };
+		99AF0CF01D9A5FBA0043C111 /* DemoLeftMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CEE1D9A5FBA0043C111 /* DemoLeftMenuViewController.m */; };
+		99AF0CF11D9A5FBA0043C111 /* DemoLeftMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99AF0CEF1D9A5FBA0043C111 /* DemoLeftMenuViewController.xib */; };
+		99AF0CF51D9A5FE00043C111 /* DemoParamsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CF31D9A5FE00043C111 /* DemoParamsViewController.m */; };
+		99AF0CF61D9A5FE00043C111 /* DemoParamsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99AF0CF41D9A5FE00043C111 /* DemoParamsViewController.xib */; };
+		99AF0CF71D9A61440043C111 /* EZSideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 9979DF651B8C17D000AA487D /* EZSideMenu.m */; };
+		99AF0CFB1D9A624F0043C111 /* DemoVideosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 99AF0CF91D9A624F0043C111 /* DemoVideosViewController.m */; };
+		99AF0CFC1D9A624F0043C111 /* DemoVideosViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 99AF0CFA1D9A624F0043C111 /* DemoVideosViewController.xib */; };
+		99AF0CFE1D9A66760043C111 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9979DF471B8C163400AA487D /* Images.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +108,25 @@
 		99A0FF661B8C847E0061D7B4 /* Default-Portrait@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x~ipad.png"; sourceTree = "<group>"; };
 		99A0FF671B8C847E0061D7B4 /* Default-Portrait~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait~ipad.png"; sourceTree = "<group>"; };
 		99A0FF681B8C847E0061D7B4 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		99AF0CD61D9A5D290043C111 /* EZSideMenuDemoTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EZSideMenuDemoTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99AF0CD91D9A5D290043C111 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		99AF0CDB1D9A5D290043C111 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		99AF0CDC1D9A5D290043C111 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		99AF0CDE1D9A5D290043C111 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		99AF0CDF1D9A5D290043C111 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		99AF0CE41D9A5D290043C111 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		99AF0CE61D9A5D290043C111 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		99AF0CEA1D9A5E990043C111 /* DemoBaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoBaseViewController.h; sourceTree = "<group>"; };
+		99AF0CEB1D9A5E990043C111 /* DemoBaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoBaseViewController.m; sourceTree = "<group>"; };
+		99AF0CED1D9A5FBA0043C111 /* DemoLeftMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoLeftMenuViewController.h; sourceTree = "<group>"; };
+		99AF0CEE1D9A5FBA0043C111 /* DemoLeftMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoLeftMenuViewController.m; sourceTree = "<group>"; };
+		99AF0CEF1D9A5FBA0043C111 /* DemoLeftMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoLeftMenuViewController.xib; sourceTree = "<group>"; };
+		99AF0CF21D9A5FE00043C111 /* DemoParamsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoParamsViewController.h; sourceTree = "<group>"; };
+		99AF0CF31D9A5FE00043C111 /* DemoParamsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoParamsViewController.m; sourceTree = "<group>"; };
+		99AF0CF41D9A5FE00043C111 /* DemoParamsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoParamsViewController.xib; sourceTree = "<group>"; };
+		99AF0CF81D9A624F0043C111 /* DemoVideosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoVideosViewController.h; sourceTree = "<group>"; };
+		99AF0CF91D9A624F0043C111 /* DemoVideosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoVideosViewController.m; sourceTree = "<group>"; };
+		99AF0CFA1D9A624F0043C111 /* DemoVideosViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoVideosViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +151,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		99AF0CD31D9A5D290043C111 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -129,6 +168,7 @@
 				9979DF391B8C163400AA487D /* EZSideMenuDemo */,
 				9979DF531B8C163500AA487D /* EZSideMenuDemoTests */,
 				9997A8DA1D9A45E700C3770C /* EZSideMenuDemoCode */,
+				99AF0CD71D9A5D290043C111 /* EZSideMenuDemoTV */,
 				9979DF381B8C163400AA487D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -139,6 +179,7 @@
 				9979DF371B8C163400AA487D /* EZSideMenuDemo.app */,
 				9979DF501B8C163500AA487D /* EZSideMenuDemoTests.xctest */,
 				9997A8D91D9A45E700C3770C /* EZSideMenuDemoCode.app */,
+				99AF0CD61D9A5D290043C111 /* EZSideMenuDemoTV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -242,6 +283,39 @@
 			path = AppDefault;
 			sourceTree = "<group>";
 		};
+		99AF0CD71D9A5D290043C111 /* EZSideMenuDemoTV */ = {
+			isa = PBXGroup;
+			children = (
+				99AF0CDB1D9A5D290043C111 /* AppDelegate.h */,
+				99AF0CDC1D9A5D290043C111 /* AppDelegate.m */,
+				99AF0CEA1D9A5E990043C111 /* DemoBaseViewController.h */,
+				99AF0CEB1D9A5E990043C111 /* DemoBaseViewController.m */,
+				99AF0CED1D9A5FBA0043C111 /* DemoLeftMenuViewController.h */,
+				99AF0CEE1D9A5FBA0043C111 /* DemoLeftMenuViewController.m */,
+				99AF0CEF1D9A5FBA0043C111 /* DemoLeftMenuViewController.xib */,
+				99AF0CF21D9A5FE00043C111 /* DemoParamsViewController.h */,
+				99AF0CF31D9A5FE00043C111 /* DemoParamsViewController.m */,
+				99AF0CF41D9A5FE00043C111 /* DemoParamsViewController.xib */,
+				99AF0CF81D9A624F0043C111 /* DemoVideosViewController.h */,
+				99AF0CF91D9A624F0043C111 /* DemoVideosViewController.m */,
+				99AF0CFA1D9A624F0043C111 /* DemoVideosViewController.xib */,
+				99AF0CDE1D9A5D290043C111 /* ViewController.h */,
+				99AF0CDF1D9A5D290043C111 /* ViewController.m */,
+				99AF0CE41D9A5D290043C111 /* Assets.xcassets */,
+				99AF0CE61D9A5D290043C111 /* Info.plist */,
+				99AF0CD81D9A5D290043C111 /* Supporting Files */,
+			);
+			path = EZSideMenuDemoTV;
+			sourceTree = "<group>";
+		};
+		99AF0CD81D9A5D290043C111 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				99AF0CD91D9A5D290043C111 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -297,6 +371,23 @@
 			productReference = 9997A8D91D9A45E700C3770C /* EZSideMenuDemoCode.app */;
 			productType = "com.apple.product-type.application";
 		};
+		99AF0CD51D9A5D290043C111 /* EZSideMenuDemoTV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99AF0CE71D9A5D290043C111 /* Build configuration list for PBXNativeTarget "EZSideMenuDemoTV" */;
+			buildPhases = (
+				99AF0CD21D9A5D290043C111 /* Sources */,
+				99AF0CD31D9A5D290043C111 /* Frameworks */,
+				99AF0CD41D9A5D290043C111 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EZSideMenuDemoTV;
+			productName = EZSideMenuDemoTV;
+			productReference = 99AF0CD61D9A5D290043C111 /* EZSideMenuDemoTV.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -317,6 +408,11 @@
 						CreatedOnToolsVersion = 8.0;
 						ProvisioningStyle = Automatic;
 					};
+					99AF0CD51D9A5D290043C111 = {
+						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = HXFWC5M984;
+						ProvisioningStyle = Manual;
+					};
 				};
 			};
 			buildConfigurationList = 9979DF321B8C163400AA487D /* Build configuration list for PBXProject "EZSideMenuDemo" */;
@@ -335,6 +431,7 @@
 				9979DF361B8C163400AA487D /* EZSideMenuDemo */,
 				9979DF4F1B8C163500AA487D /* EZSideMenuDemoTests */,
 				9997A8D81D9A45E700C3770C /* EZSideMenuDemoCode */,
+				99AF0CD51D9A5D290043C111 /* EZSideMenuDemoTV */,
 			);
 		};
 /* End PBXProject section */
@@ -372,6 +469,18 @@
 				9997A8EB1D9A45E700C3770C /* LaunchScreen.storyboard in Resources */,
 				99AF0C8B1D9A510F0043C111 /* Main.storyboard in Resources */,
 				99AF0C8A1D9A51050043C111 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99AF0CD41D9A5D290043C111 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99AF0CFC1D9A624F0043C111 /* DemoVideosViewController.xib in Resources */,
+				99AF0CF11D9A5FBA0043C111 /* DemoLeftMenuViewController.xib in Resources */,
+				99AF0CF61D9A5FE00043C111 /* DemoParamsViewController.xib in Resources */,
+				99AF0CFE1D9A66760043C111 /* Images.xcassets in Resources */,
+				99AF0CE51D9A5D290043C111 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,6 +525,21 @@
 				99AF0C881D9A4FB80043C111 /* DemoVideosViewController.m in Sources */,
 				9997A8DD1D9A45E700C3770C /* main.m in Sources */,
 				99AF0C851D9A4FB80043C111 /* DemoLeftMenuViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99AF0CD21D9A5D290043C111 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99AF0CE01D9A5D290043C111 /* ViewController.m in Sources */,
+				99AF0CDD1D9A5D290043C111 /* AppDelegate.m in Sources */,
+				99AF0CF01D9A5FBA0043C111 /* DemoLeftMenuViewController.m in Sources */,
+				99AF0CFB1D9A624F0043C111 /* DemoVideosViewController.m in Sources */,
+				99AF0CF51D9A5FE00043C111 /* DemoParamsViewController.m in Sources */,
+				99AF0CEC1D9A5E990043C111 /* DemoBaseViewController.m in Sources */,
+				99AF0CF71D9A61440043C111 /* EZSideMenu.m in Sources */,
+				99AF0CDA1D9A5D290043C111 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -629,6 +753,54 @@
 			};
 			name = Release;
 		};
+		99AF0CE81D9A5D290043C111 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhaohua Cai (H4AK63G5SM)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = HXFWC5M984;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = EZSideMenuDemoTV/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.oukavip.EZSideMenuDemoTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "70c07648-c361-4e06-817d-4591154365f9";
+				PROVISIONING_PROFILE_SPECIFIER = FreeForAll_dev_tv;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		99AF0CE91D9A5D290043C111 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhaohua Cai (H4AK63G5SM)";
+				DEVELOPMENT_TEAM = X5J4BEV8SK;
+				INFOPLIST_FILE = EZSideMenuDemoTV/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.oukavip.EZSideMenuDemoTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "70c07648-c361-4e06-817d-4591154365f9";
+				PROVISIONING_PROFILE_SPECIFIER = FreeForAll_dev_tv;
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -667,6 +839,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		99AF0CE71D9A5D290043C111 /* Build configuration list for PBXNativeTarget "EZSideMenuDemoTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				99AF0CE81D9A5D290043C111 /* Debug */,
+				99AF0CE91D9A5D290043C111 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

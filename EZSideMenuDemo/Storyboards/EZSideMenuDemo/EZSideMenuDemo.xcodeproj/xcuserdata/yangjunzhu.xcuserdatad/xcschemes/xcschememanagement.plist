@@ -14,6 +14,11 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>EZSideMenuDemoTV.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -28,6 +33,11 @@
 			<true/>
 		</dict>
 		<key>9997A8D81D9A45E700C3770C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>99AF0CD51D9A5D290043C111</key>
 		<dict>
 			<key>primary</key>
 			<true/>

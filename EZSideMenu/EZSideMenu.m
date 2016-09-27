@@ -110,7 +110,6 @@
     _panGestureEnabled = YES;
     _panFromEdge = YES;
     _panMinimumOpenThreshold = 60.0;
-    _interactivePopGestureRecognizerEnabled = YES;
     _bouncesHorizontally = YES;
     
     //透明度渐变
@@ -258,13 +257,15 @@
         self.backgroundImageView.transform = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
     
     [self __addMenuViewControllerMotionEffects];
-    
+#if TARGET_OS_IOS
     if (self.panGestureEnabled) {
+
         self.view.multipleTouchEnabled = NO;
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
         panGestureRecognizer.delegate = self;
         [self.view addGestureRecognizer:panGestureRecognizer];
     }
+#endif
     
     [self __updateContentViewShadow];
 }
@@ -334,11 +335,21 @@
             self.contentViewContainer.transform = CGAffineTransformIdentity;
         }
         if(menuViewController == self.leftMenuViewController){
+#if TARGET_OS_IOS
             self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? (self.contentViewInLandscapeOffsetCenterX + [self __viewGetWidth]) : (self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame))), self.contentViewContainer.center.y);
+#else
+            self.contentViewContainer.center = CGPointMake((self.contentViewInLandscapeOffsetCenterX + [self __viewGetWidth]) , self.contentViewContainer.center.y);
+#endif
         }else{
+#if TARGET_OS_IOS
             self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
+            self.contentViewContainer.center = CGPointMake( -self.contentViewInLandscapeOffsetCenterX , self.contentViewContainer.center.y);
+#else
+            self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
+#endif
+            
         }
-        self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
+        
         
     } completion:^(BOOL finished) {
         [menuViewController endAppearanceTransition];
@@ -352,6 +363,7 @@
         self.leftMenuVisible = (menuViewController == self.leftMenuViewController);
         self.rightMenuVisible = (menuViewController == self.rightMenuViewController);
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        [self setNeedsFocusUpdate];
         
     }];
     
@@ -511,6 +523,7 @@
         [visibleMenuViewController endAppearanceTransition];
         if (!strongSelf.visible && [strongSelf.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [strongSelf.delegate respondsToSelector:@selector(sideMenu:didHideMenuViewController:)]) {
             [strongSelf.delegate sideMenu:strongSelf didHideMenuViewController:rightMenuVisible ? strongSelf.rightMenuViewController : strongSelf.leftMenuViewController];
+            [self setNeedsFocusUpdate];
         }
     };
     
@@ -575,11 +588,15 @@
 
 #pragma mark - view methods (Private)
 -(CGFloat)__viewGetWidth{
+#if TARGET_OS_IOS
     if ((NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1)) {
         return  CGRectGetWidth(self.view.frame);
     }else{
         return UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)?CGRectGetHeight(self.view.frame):CGRectGetWidth(self.view.frame);
     }
+#else
+    return  CGRectGetWidth(self.view.frame);
+#endif
 }
 
 #pragma mark -
@@ -624,17 +641,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    /*
-     IF_IOS7_OR_GREATER(
-     if (self.interactivePopGestureRecognizerEnabled && [self.contentViewController isKindOfClass:[UINavigationController class]]) {
-     UINavigationController *navigationController = (UINavigationController *)self.contentViewController;
-     if (navigationController.viewControllers.count > 1 && navigationController.interactivePopGestureRecognizer.enabled) {
-     return NO;
-     }
-     }
-     );
-     */
-    
+
     if (self.panFromEdge && [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && !self.visible) {
         CGPoint point = [touch locationInView:gestureRecognizer.view];
         if (point.x < 20.0 || point.x > self.view.frame.size.width - 20.0) {
@@ -915,7 +922,7 @@
 
 #pragma mark -
 #pragma mark Status Bar Appearance Management
-
+#if TARGET_OS_IOS
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     UIStatusBarStyle statusBarStyle = UIStatusBarStyleDefault;
@@ -956,6 +963,49 @@
     
     return statusBarAnimation;
 }
+#endif
+
+#pragma mark -
+#pragma mark UIPress action (Private)
+
+-(void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+    
+    if ( presses.anyObject.type == UIPressTypeMenu) {
+        
+        if (self.visible == NO){
+            
+            if ([self.contentViewController isKindOfClass:[UINavigationController class]]) {
+                UINavigationController *navigationController = (UINavigationController *)self.contentViewController;
+                if (navigationController.viewControllers.count == 1 &&  !navigationController.viewControllers[0].presentedViewController && !self.contentViewController.presentedViewController) {
+                    [self presentLeftMenuViewController];
+                    return;
+                }
+            }else{
+                if(!self.contentViewController.presentedViewController){
+                    [self presentLeftMenuViewController];
+                    return;
+                }
+            }
+        }
+    }
+    [super pressesBegan:presses withEvent:event];
+}
+
+#pragma mark -
+#pragma mark UIFocusEnvironment
+
+- (UIView *)preferredFocusedView
+{
+    if (self.visible == YES){
+        self.contentViewContainer.userInteractionEnabled = NO;
+        return self.leftMenuViewController.view;
+    }else{
+        self.contentViewContainer.userInteractionEnabled = YES;
+        return self.contentViewController.view;
+    }
+}
+
+
 
 @end
 
@@ -975,4 +1025,5 @@
     [UIView animateWithDuration:0.6 animations:^{
         weakSelf.menuViewContainer.alpha = 1;
     }];
-}@end
+}
+@end
