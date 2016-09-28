@@ -1,12 +1,11 @@
 EZSideMenuDemo
 ==============
 
-thanks https://github.com/romaonthego/RESideMenu
-
-this demo supports ios7 or higher
+this demo supports ios7 or higher， tvOS9 or higher
 
 xcode8 or higher
 
-ARC
+thanks [Roman Efimov](https://github.com/romaonthego)
+
 
 
