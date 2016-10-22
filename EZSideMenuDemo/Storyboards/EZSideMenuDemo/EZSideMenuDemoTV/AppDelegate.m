@@ -28,7 +28,7 @@
     EZSideMenu *sideMenuViewController = [[EZSideMenu alloc] initWithContentViewController:navigationController
                                                                     leftMenuViewController:leftMenuViewController
                                                                    rightMenuViewController:nil];
-//    sideMenuViewController.menuPreferredStatusBarStyle = UIStatusBarStyleLightContent;
+    sideMenuViewController.contentViewInLandscapeOffsetCenterX = -500;
     sideMenuViewController.contentViewShadowColor = [UIColor blackColor];
     sideMenuViewController.contentViewShadowOffset = CGSizeMake(0, 0);
     sideMenuViewController.contentViewShadowOpacity = 0.6;
@@ -36,17 +36,11 @@
     sideMenuViewController.contentViewShadowEnabled = NO;
     sideMenuViewController.scaleMenuView = NO;
     sideMenuViewController.scaleContentView = NO;
-//    sideMenuViewController.panGestureEnabled = NO;
     sideMenuViewController.parallaxEnabled = NO;
     sideMenuViewController.bouncesHorizontally = NO;
-
-    
-    
     sideMenuViewController.backgroundImage = [UIImage imageNamed:@"menu_bg"];
     sideMenuViewController.delegate = self;
-    
     self.window.rootViewController = sideMenuViewController;
-    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
 //    [sideMenuViewController presentLeftMenuViewController];
@@ -104,6 +98,13 @@
 {
     NSLog(@"didHideMenuViewController: %@", NSStringFromClass([menuViewController class]));
 }
+
+- (BOOL)sideMenu:(EZSideMenu *)sideMenu interceptPressedMenuBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+    NSLog(@"interceptPressedMenuBegan");
+    return NO;
+
+}
+
 
 
 @end

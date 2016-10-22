@@ -48,17 +48,16 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-  
+    
     if (self.menuDic.count > 6) {
         switch (indexPath.row) {
             case 8:
                 self.menuDic = RootMenu;
-                [self ConfigTableFrame];
                 self.focusIndexPath = [NSIndexPath indexPathForRow:2 inSection:0];
-
+                
                 [self.menuTableView reloadData];
                 [self setNeedsFocusUpdate];
-
+                
                 [self.sideMenuViewController flashMenu];
                 break;
             default:
@@ -67,29 +66,23 @@
     }else{
         switch (indexPath.row) {
             case 0:{
-//                DemoParamsViewController *paramsViewController = [[DemoParamsViewController alloc] initWithNibName:@"DemoParamsViewController" bundle:nil];
-//                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:paramsViewController];
-//                [self.sideMenuViewController setContentViewController:navigationController
-//                                                             animated:YES];
+                
                 [self.sideMenuViewController hideMenuViewController];
                 break;
             }
                 
             case 1:{
-//                DemoVideosViewController *paramsViewController = [[DemoVideosViewController alloc] initWithNibName:@"DemoVideosViewController" bundle:nil];
-//                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:paramsViewController];
-//                [self.sideMenuViewController setContentViewController:navigationController
-//                                                             animated:YES];
+                
                 [self.sideMenuViewController hideMenuViewController];
                 break;
             }
                 
             case 2:
                 self.menuDic = TeamMenu;
-//                [self ConfigTableFrame];
+                //                [self ConfigTableFrame];
                 [self.menuTableView reloadData];
                 [self setNeedsFocusUpdate];
-
+                
                 [self.sideMenuViewController flashMenu];
                 break;
                 
@@ -124,8 +117,8 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         cell.backgroundColor = [UIColor clearColor];
-//        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:21];
-//        cell.textLabel.textColor = [UIColor whiteColor];
+        //        cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:21];
+        //        cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.highlightedTextColor = [UIColor lightGrayColor];
         cell.selectedBackgroundView = [[UIView alloc] init];
     }
@@ -134,7 +127,7 @@
     cell.textLabel.text = arr[0];
     cell.imageView.image = [UIImage imageNamed:arr[1]];
     cell.textLabel.textColor = [UIColor whiteColor];
-
+    
     return cell;
 }
 
@@ -144,9 +137,9 @@
     {
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:prevIndexPath];
         cell.textLabel.textColor = [UIColor whiteColor];
-    
+        
     }
-
+    
     
     NSIndexPath *nextIndexPath = [context nextFocusedIndexPath];
     if (nextIndexPath)
@@ -157,22 +150,14 @@
             [self.sideMenuViewController setContentViewController:self.viewControllers[nextIndexPath.row]
                                                          animated:YES];
         }
-
+        
     }
-
+    
 }
 #pragma mark - private
-
-- (void)ConfigTableFrame
-{
-
-}
-
-
-
 - (UIView *)preferredFocusedView
 {
-
+    
     if (self.focusIndexPath) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
@@ -180,11 +165,11 @@
             
         });
         return [self.menuTableView cellForRowAtIndexPath:self.focusIndexPath];
-
+        
     }else{
         return self.view.preferredFocusedView;
     }
-
+    
 }
 
 
