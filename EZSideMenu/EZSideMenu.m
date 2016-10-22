@@ -991,8 +991,8 @@
             }
         }else{
             
-            if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:pressesBegan:withEvent:)]) {
-                if(![self.delegate sideMenu:self pressesBegan:presses withEvent:event]){
+            if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:interceptPressedMenuBegan:withEvent:)]) {
+                if([self.delegate sideMenu:self interceptPressedMenuBegan:presses withEvent:event]){
                     return;
                 }
             }
