@@ -122,12 +122,12 @@
                   moduleName = "EZSideMenuDemoTV"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/yangjunzhu/gitHub/EZSideMenuDemo/EZSideMenuDemo/Storyboards/EZSideMenuDemo/EZSideMenuDemoTV/DemoLeftMenuViewController.m"
-                  timestampString = "496681566.190475"
+                  timestampString = "498821977.443045"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "177"
                   endingLineNumber = "177"
-                  offsetFromSymbolStart = "88">
+                  offsetFromSymbolStart = "98">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -137,12 +137,12 @@
                   moduleName = "EZSideMenuDemoTV"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/yangjunzhu/gitHub/EZSideMenuDemo/EZSideMenuDemo/Storyboards/EZSideMenuDemo/EZSideMenuDemoTV/DemoLeftMenuViewController.m"
-                  timestampString = "496681566.191739"
+                  timestampString = "498821977.445451"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "177"
                   endingLineNumber = "177"
-                  offsetFromSymbolStart = "28">
+                  offsetFromSymbolStart = "16">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../EZSideMenu/EZSideMenu.m"
-            timestampString = "496682060.377578"
+            timestampString = "498822846.271581"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "999"
-            endingLineNumber = "999"
+            startingLineNumber = "1034"
+            endingLineNumber = "1034"
             landmarkName = "-preferredFocusedView"
             landmarkType = "7">
          </BreakpointContent>
@@ -176,6 +176,22 @@
             startingLineNumber = "176"
             endingLineNumber = "176"
             landmarkName = "-preferredFocusedView"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "EZSideMenuDemoTV/DemoLeftMenuViewController.m"
+            timestampString = "498381604.21939"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "-tableView:didSelectRowAtIndexPath:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

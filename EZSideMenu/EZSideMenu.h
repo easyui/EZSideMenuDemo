@@ -110,6 +110,7 @@
 - (void)sideMenu:(EZSideMenu *)sideMenu didShowMenuViewController:(UIViewController *)menuViewController;
 - (void)sideMenu:(EZSideMenu *)sideMenu willHideMenuViewController:(UIViewController *)menuViewController;
 - (void)sideMenu:(EZSideMenu *)sideMenu didHideMenuViewController:(UIViewController *)menuViewController;
+- (BOOL)sideMenu:(EZSideMenu *)sideMenu pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event;
 
 @end
 

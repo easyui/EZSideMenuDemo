@@ -52,6 +52,7 @@
 @property (strong, readwrite, nonatomic) UIView *menuViewContainer;
 @property (strong, readwrite, nonatomic) UIView *contentViewContainer;
 @property (assign, readwrite, nonatomic) BOOL didNotifyDelegate;
+@property (assign, nonatomic) BOOL toSuperMenu;
 
 @end
 
@@ -523,8 +524,9 @@
         [visibleMenuViewController endAppearanceTransition];
         if (!strongSelf.visible && [strongSelf.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [strongSelf.delegate respondsToSelector:@selector(sideMenu:didHideMenuViewController:)]) {
             [strongSelf.delegate sideMenu:strongSelf didHideMenuViewController:rightMenuVisible ? strongSelf.rightMenuViewController : strongSelf.leftMenuViewController];
-            [self setNeedsFocusUpdate];
         }
+        [self setNeedsFocusUpdate];
+
     };
     
     if (animated) {
@@ -971,6 +973,7 @@
 -(void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
     
     if ( presses.anyObject.type == UIPressTypeMenu) {
+        self.toSuperMenu = NO;
         
         if (self.visible == NO){
             
@@ -986,10 +989,42 @@
                     return;
                 }
             }
+        }else{
+            
+            if ([self.delegate conformsToProtocol:@protocol(EZSideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:pressesBegan:withEvent:)]) {
+                if(![self.delegate sideMenu:self pressesBegan:presses withEvent:event]){
+                    return;
+                }
+            }
+            
         }
+        self.toSuperMenu = YES;
     }
     [super pressesBegan:presses withEvent:event];
 }
+
+-(void)pressesChanged:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+    if ( presses.anyObject.type == UIPressTypeMenu && !self.toSuperMenu) {
+        return;
+    }
+    [super pressesChanged:presses withEvent:event];
+}
+
+-(void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+    if ( presses.anyObject.type == UIPressTypeMenu && !self.toSuperMenu) {
+        return;
+    }
+    [super pressesEnded:presses withEvent:event];
+}
+
+
+-(void)pressesCancelled:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+    if ( presses.anyObject.type == UIPressTypeMenu && !self.toSuperMenu) {
+        return;
+    }
+    [super pressesCancelled:presses withEvent:event];
+}
+
 
 #pragma mark -
 #pragma mark UIFocusEnvironment
