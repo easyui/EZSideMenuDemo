@@ -24,6 +24,10 @@
     self.contentViewShadowRadius = 12;
     self.contentViewShadowEnabled = YES;
     
+    
+    self.scaleBackgroundImageView = NO;
+    self.scaleMenuView = NO;
+    self.scaleContentView = NO;
     //    self.contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TRZEatAlarmViewControllerPhoneStoryboardID"];
     //    self.leftMenuViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TRZMainMenuViewControllerSharedStoryboardID"];
     //    self.rightMenuViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"rightMenuViewController"];
